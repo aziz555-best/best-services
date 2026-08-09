@@ -18,21 +18,21 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg-light); color: var(--secondary); padding-bottom: 50px; }
 
-        /* Header & Logo */
-        header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: var(--white); padding: 20px 15px; text-align: center; box-shadow: var(--shadow); }
+        /* Header */
+        header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: var(--white); padding: 20px 15px; text-align: center; box-shadow: var(--shadow); position: relative; }
         .logo-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 5px; }
         .logo-box { background: var(--white); color: var(--primary-dark); font-weight: 900; font-size: 1.8rem; padding: 5px 15px; border-radius: 8px; letter-spacing: 2px; }
-        header p { font-size: 0.95rem; opacity: 0.9; }
+        
+        .login-btn-header { position: absolute; left: 15px; top: 20px; background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+        .login-btn-header:hover { background: white; color: var(--primary-dark); }
 
         .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
 
-        /* Tabs for Control Panels */
-        .panel-tabs { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .tab-btn { background: #e5e7eb; color: var(--secondary); border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .tab-btn.active { background: var(--primary); color: var(--white); }
-
+        /* Panels Container (Hidden by default for visitors) */
         .panel-content { display: none; background: var(--white); padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow); border-top: 4px solid var(--primary); }
         .panel-content.active { display: block; }
+
+        .user-session-bar { display: none; justify-content: space-between; align-items: center; background: #e0f2fe; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #bae6fd; }
 
         button { cursor: pointer; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; }
         .btn-main { background: var(--primary); color: var(--white); }
@@ -40,7 +40,7 @@
         .btn-danger { background: #ef4444; color: var(--white); }
         .btn-secondary { background: #6b7280; color: var(--white); }
 
-        /* Main Categories Layout */
+        /* Categories Layout */
         .category-card { background: var(--white); border-radius: 10px; margin-bottom: 15px; box-shadow: var(--shadow); overflow: hidden; }
         .category-header { padding: 18px; background: #fff; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #eee; }
         .category-title { font-size: 1.15rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
@@ -48,181 +48,171 @@
 
         .subcategories { display: none; padding: 15px; background: #fafafa; }
         .subcategory-block { background: var(--white); border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
-        .subcategory-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 1rem; margin-bottom: 10px; color: var(--primary-dark); }
+        .subcategory-header { font-weight: bold; font-size: 1rem; margin-bottom: 10px; color: var(--primary-dark); }
 
-        .service-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #e5e7eb; }
+        .service-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #e5e7eb; flex-wrap: wrap; gap: 10px; }
         .service-item:last-child { border-bottom: none; }
+        .service-info { display: flex; flex-direction: column; gap: 3px; }
+        .merchant-location { font-size: 0.8rem; color: #666; }
+        .rating { color: #f59e0b; font-size: 0.85rem; }
 
-        /* Modal */
+        .action-btns { display: flex; gap: 5px; align-items: center; }
+
+        /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: var(--white); padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; }
+        .modal-content { background: var(--white); padding: 25px; border-radius: 12px; width: 90%; max-width: 450px; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: bold; }
-        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
     </style>
 </head>
 <body>
 
     <header>
+        <button class="login-btn-header" id="authBtn" onclick="openModal('loginModal')"><i class="fas fa-lock"></i> دخول الشركاء</button>
         <div class="logo-container">
             <div class="logo-box">BEST</div>
             <h1 style="font-size: 1.5rem;">منصة الخدمات الشاملة</h1>
         </div>
-        <p>ربط العملاء والتجار والمفوضين في مكان واحد</p>
+        <p>تصفح وحجز الخدمات بكل سهولة</p>
     </header>
 
     <div class="container">
 
-        <!-- Control Panel Tabs -->
-        <div class="panel-tabs">
-            <button class="tab-btn active" onclick="switchTab('ownerPanel', this)">👑 لوحة المالك</button>
-            <button class="tab-btn" onclick="switchTab('agentPanel', this)">💼 لوحة المفوض</button>
-            <button class="tab-btn" onclick="switchTab('merchantPanel', this)">🏪 لوحة التاجر</button>
+        <!-- Active User Session Bar -->
+        <div class="user-session-bar" id="sessionBar">
+            <div><i class="fas fa-user-circle"></i> مرحباً بك: <strong id="sessionRole">--</strong> (<span id="sessionPhone">--</span>)</div>
+            <button class="btn-danger" style="padding: 4px 10px; font-size: 0.8rem;" onclick="logout()">تسجيل خروج</button>
         </div>
 
-        <!-- 👑 1. Owner Panel -->
-        <div id="ownerPanel" class="panel-content active">
-            <h3>👑 لوحة التحكم الشاملة للمالك</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">إدارة الأقسام الرئيسية والفرعية والإحصائيات الكلية.</p>
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                <button class="btn-main" onclick="openModal('addMainModal')"><i class="fas fa-plus"></i> إضافة قسم رئيسي</button>
-                <button class="btn-main" onclick="openSubModal()"><i class="fas fa-folder-plus"></i> إضافة قسم فرعي</button>
+        <!-- 👑 1. Owner Panel (Hidden from public) -->
+        <div id="ownerPanel" class="panel-content">
+            <h3>👑 لوحة المالك</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">تسجيل المفوضين وإدارة المنصة.</p>
+            
+            <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px;">
+                <h4 style="font-size: 0.95rem; margin-bottom: 8px;">➕ إضافة رقم مفوض جديد:</h4>
+                <div style="display: flex; gap: 8px;">
+                    <input type="tel" id="newAgentPhone" placeholder="05xxxxxxxx" style="flex: 1; padding: 6px;">
+                    <button class="btn-main" onclick="registerAgent()">اعتماد المفوض</button>
+                </div>
             </div>
+            
+            <p><strong>📊 الإحصائيات:</strong> عدد مرات نسخ أرقام التجار: <span id="copyCounterCount" style="color:var(--primary-dark); font-weight:bold;">0</span></p>
         </div>
 
-        <!-- 💼 2. Agent Panel -->
+        <!-- 💼 2. Agent Panel (Hidden from public) -->
         <div id="agentPanel" class="panel-content">
-            <h3>💼 لوحة المفوض / المسوّق</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">متابعة الأداء والكود التسويقي الخاص بك.</p>
-            <div class="form-group">
-                <label>كود التتبع الخاص بك:</label>
-                <input type="text" value="AGENT-BEST-101" readonly style="background: #f0f0f0; font-weight:bold;">
+            <h3>💼 لوحة المفوض</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">إضافة التجار التابعين لك ومتابعة الحجوزات.</p>
+
+            <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px;">
+                <h4 style="font-size: 0.95rem; margin-bottom: 8px;">➕ إضافة رقم تاجر جديد تحت إشرافك:</h4>
+                <div style="display: flex; gap: 8px;">
+                    <input type="tel" id="newMerchantPhone" placeholder="05xxxxxxxx" style="flex: 1; padding: 6px;">
+                    <button class="btn-main" onclick="registerMerchant()">تسجيل التاجر</button>
+                </div>
             </div>
-            <p>إجمالي الحجوزات المسجلة عبر كودك: <strong>12 حجز</strong></p>
+
+            <div class="form-group">
+                <label>كود التسويق والتتبع الخاص بك:</label>
+                <input type="text" id="agentCode" readonly style="background: #e5e7eb; font-weight:bold;">
+            </div>
         </div>
 
-        <!-- 🏪 3. Merchant Panel -->
+        <!-- 🏪 3. Merchant Panel (Hidden from public) -->
         <div id="merchantPanel" class="panel-content">
             <h3>🏪 لوحة التحكم للتاجر</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">إضافة الموقع والجغرافيا وقبول/رفض الحجوزات.</p>
-
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">إدارة موقعك ورقم التواصل.</p>
             <div class="form-group">
-                <label>الدولة / المنطقة / المدينة / الشارع</label>
-                <input type="text" placeholder="السعودية - جازان - أبو عريش - شارع الملك فهد">
+                <label>العنوان الكامل (الدولة - المنطقة - المدينة - الشارع):</label>
+                <input type="text" id="merchantAddress" placeholder="السعودية - جازان - أبو عريش">
             </div>
             <div class="form-group">
-                <label>رابط الموقع على الخريطة (Google Maps)</label>
-                <input type="url" placeholder="https://maps.google.com/...">
+                <label>رابط الموقع على الخريطة (Google Maps):</label>
+                <input type="url" id="merchantMapLink" placeholder="https://maps.google.com/...">
             </div>
-            <button class="btn-main">تحديث بيانات المتجر 📍</button>
+            <button class="btn-main" onclick="alert('تم حفظ بيانات المتجر والعنوان بنجاح!')">تحديث البيانات 📍</button>
         </div>
 
-        <!-- Categories List -->
+        <!-- Public Services List (Visible for ALL) -->
+        <h3 style="margin-bottom: 15px; color: var(--secondary);"><i class="fas fa-th-list"></i> جميع الخدمات والأقسام</h3>
         <div id="categoriesContainer"></div>
 
     </div>
 
-    <!-- Modal Add Main Category -->
-    <div class="modal" id="addMainModal">
+    <!-- Modal OTP Login -->
+    <div class="modal" id="loginModal">
         <div class="modal-content">
-            <h3>إضافة قسم رئيسي</h3>
-            <div class="form-group">
-                <label>اسم القسم الرئيسي الجديد</label>
-                <input type="text" id="newMainTitle">
+            <h3 style="margin-bottom: 10px;"><i class="fas fa-user-shield"></i> تسجيل دخول الشركاء</h3>
+            <p style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">أدخل رقم الجوال المسجل للتحقق عبر رمز OTP</p>
+
+            <div id="stepPhone">
+                <div class="form-group">
+                    <label>رقم الجوال:</label>
+                    <input type="tel" id="inputPhone" placeholder="05xxxxxxxx">
+                </div>
+                <button class="btn-main" style="width: 100%;" onclick="sendOTP()">إرسال رمز التحقق OTP</button>
             </div>
-            <button class="btn-main" onclick="addMainCategory()">حفظ</button>
-            <button class="btn-secondary" onclick="closeModal('addMainModal')">إلغاء</button>
+
+            <div id="stepOTP" style="display: none;">
+                <div class="form-group">
+                    <label>أدخل رمز OTP (للتجربة استخدم: 1234):</label>
+                    <input type="text" id="inputOTP" placeholder="1234" style="text-align: center; letter-spacing: 5px; font-weight: bold;">
+                </div>
+                <button class="btn-main" style="width: 100%;" onclick="verifyOTP()">تأكيد الدخول</button>
+            </div>
+
+            <button class="btn-secondary" style="width: 100%; margin-top: 10px;" onclick="closeModal('loginModal')">إلغاء</button>
         </div>
     </div>
 
-    <!-- Modal Add Sub Category (FIXED & WORKING) -->
-    <div class="modal" id="addSubModal">
+    <!-- Modal Booking -->
+    <div class="modal" id="bookingModal">
         <div class="modal-content">
-            <h3>إضافة قسم فرعي جديد</h3>
-            <div class="form-group">
-                <label>اختر القسم الرئيسي</label>
-                <select id="mainCategorySelect"></select>
-            </div>
-            <div class="form-group">
-                <label>اسم القسم الفرعي الجديد</label>
-                <input type="text" id="newSubTitle">
-            </div>
-            <button class="btn-main" onclick="addSubCategory()">إضافة</button>
-            <button class="btn-secondary" onclick="closeModal('addSubModal')">إلغاء</button>
+            <h3><i class="fas fa-calendar-check"></i> طلب حجز خدمة</h3>
+            <form onsubmit="submitBooking(event)">
+                <div class="form-group">
+                    <label>اسم العميل:</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label>رقم جوال العميل:</label>
+                    <input type="tel" required placeholder="05xxxxxxxx">
+                </div>
+                <div class="form-group">
+                    <label>كود المفوض (إن وجد):</label>
+                    <input type="text" placeholder="مثال: AGENT-101">
+                </div>
+                <button type="submit" class="btn-main" style="width: 100%;">تأكيد الطلب والحجز</button>
+                <button type="button" class="btn-secondary" style="width: 100%; margin-top: 8px;" onclick="closeModal('bookingModal')">إلغاء</button>
+            </form>
         </div>
     </div>
 
     <script>
+        // Database of registered system numbers
+        let systemUsers = {
+            owners: ["0500000000"], // رقم المالك الرئيسي
+            agents: ["0511111111"], // أرقام المفوضين المسجلين من قبل المالك
+            merchants: ["0522222222"] // أرقام التجار المسجلين من قبل المفوضين
+        };
+
+        let tempPhone = "";
+        let copyCounter = 0;
+
         let data = [
             {
-                id: 1,
                 title: "1. خدمات الأعمال والتقنية",
-                subs: [
-                    { name: "التقنية والبرمجة", services: ["تصميم وإنشاء مواقع وتطبيقات", "صيانة شبكات وكاميرات مراقبة", "صيانة جوالات وحاسب آلي"] },
-                    { name: "التسويق والتصميم", services: ["إدارة حسابات التواصل الاجتماعي", "تصميم شعارات وهويات بصرية", "تصوير منتجات وإعلانات"] },
-                    { name: "خدمات حكومية وإدارية", services: ["تعقيب معاملات وشؤون تجارية", "استشارات قانونية ومحاسبية"] }
-                ]
+                subs: [{ name: "التقنية والبرمجة", services: ["تصميم وإنشاء مواقع وتطبيقات", "صيانة شبكات وكاميرات مراقبة"] }]
             },
             {
-                id: 2,
                 title: "2. المقاولات والبناء",
-                subs: [
-                    { name: "البناء والتأسيس", services: ["المقاولات العامة والمباني (عظم / مفتاح)", "أعمال الحفر والردم والتأسيس", "حدادة مسلح وصبات خرسانية"] },
-                    { name: "التشطيبات والديكور", services: ["دهانات وورق جدران وديكورات فوم", "تركيب سيراميك ورخام وباركيه", "أعمال جبس بورد وأسقف مستعارة", "واجهات زجاجية (ألومنيوم للشبابيك والأبواب)"] },
-                    { name: "الترميم والصيانة المعمارية", services: ["ترميم وتجديد المنازل والمباني", "عزل اسطح وخزانات (مائي وحراري)"] }
-                ]
+                subs: [{ name: "البناء والتأسيس", services: ["المقاولات العامة والمباني", "أعمال الحفر والردم"] }]
             },
             {
-                id: 3,
                 title: "3. العقارات",
-                subs: [
-                    { name: "بيع العقارات", services: ["بيع اراضي مخططات وسكنية", "بيع فلل وشقق سكنية", "بيع عماير ومحلات تجارية"] },
-                    { name: "إيجار العقارات", services: ["شقق وفلل للإيجار (سنوي / شهري)", "محلات ومكاتب ومستودعات للإيجار", "شقق مفروشة وشاليهات يومية"] },
-                    { name: "إدارة واستثمار العقار", services: ["إدارة أملاك وصيانة عقارات", "تسويق وتقييم عقاري معتمد"] }
-                ]
-            },
-            {
-                id: 4,
-                title: "4. البيع والشراء - حراج وشامل",
-                subs: [
-                    { name: "بيع وشراء السيارات والمركبات", services: ["سيارات جديدة ومستعملة للبيع", "قطع غيار وتشاليح", "معدات ثقيلة وشاحنات"] },
-                    { name: "الأجهزة والإلكترونيات", services: ["جوالات وأجهزة ذكية", "أجهزة منزلية وكهربائية مستعملة وجديدة"] },
-                    { name: "الأثاث والمستلزمات", services: ["أثاث منزلي ومكتبي للبيع", "معدات ومستلزمات محلات تجارية"] }
-                ]
-            },
-            {
-                id: 5,
-                title: "5. المواد الغذائية والمطاعم",
-                subs: [
-                    { name: "المطاعم والمأكولات", services: ["وجبات سريعة (برجر / بيتزا / شاورما)", "مطاعم مأكولات شعبية وشواء", "مطابخ سحابية وأسر منتجة"] },
-                    { name: "المقاهي والحلا", services: ["كافيهات وقهوة مختصة", "مخابز وحلويات شرقية وغربية"] },
-                    { name: "المواد الغذائية والتموينات", services: ["سوبرماركت وتموينات مباشرة", "خضار وفواكه طازجة (جملة وتجزئة)", "لحوم ودواجن طازجة", "مصانع ومستودعات توزيع المياه"] }
-                ]
-            },
-            {
-                id: 6,
-                title: "6. الصحة والمراكز الطبية",
-                subs: [
-                    { name: "المستشفيات والمراكز التخصصية", services: ["مستشفيات ومجمعات طبية عامة", "مراكز جراحة اليوم الواحد"] },
-                    { name: "العيادات التخصصية", services: ["عيادات أسنان", "عيادات جلدية وليزر وتجميل", "عيادات عيون وتصحيح نظر"] },
-                    { name: "الخدمات الطبية المساندة", services: ["صيدليات ومختبرات تحاليل", "رعاية صحية وتمريض منزلي"] }
-                ]
-            },
-            {
-                id: 7,
-                title: "7. الخدمات المنزلية والصيانة",
-                subs: [
-                    { name: "صيانة وإصلاح", services: ["صيانة وتنظيف مكيفات (سبليت / شباك / مركزي)", "سباكة وتأسيس شبكات مياه", "كهرباء منازل وإضاءة", "صيانة أجهزة منزلية"] },
-                    { name: "نظافة وتعقيم", services: ["تنظيف منازل وفلل", "غسيل سجاد ومجالس بالبخار", "مكافحة حشرات ورش مبيدات"] }
-                ]
-            },
-            {
-                id: 8,
-                title: "8. خدمات السيارات والنقل",
-                subs: [
-                    { name: "صيانة ورش السيارات", services: ["ميكانيكا وفحص كمبيوتر", "كهرباء سيارات وبطاريات", "تغيير زيوت وإطارات"] },
-                    { name: "النقل واللوجستيات", services: ["سطحات نقل سيارات (عادية / هيدروليك)", "نقل عفش وتغليف أثاث", "دينا وشحن بين المدن"] }
-                ]
+                subs: [{ name: "بيع العقارات", services: ["بيع اراضي ومخططات", "بيع فلل وشقق سكنية"] }]
             }
         ];
 
@@ -231,39 +221,32 @@
             container.innerHTML = '';
 
             data.forEach((cat, index) => {
-                let totalServices = cat.subs.reduce((acc, sub) => acc + sub.services.length, 0);
-
                 let catHTML = `
                     <div class="category-card">
                         <div class="category-header" onclick="toggleCategory(${index})">
-                            <div class="category-title">
-                                <i class="fas fa-folder"></i> ${cat.title}
-                            </div>
-                            <div>
-                                <span class="badge">${totalServices} خدمة</span>
-                                <button class="btn-danger" style="padding:3px 8px; font-size:0.75rem;" onclick="event.stopPropagation(); deleteMainCategory(${index})"><i class="fas fa-trash"></i></button>
-                            </div>
+                            <div class="category-title"><i class="fas fa-folder"></i> ${cat.title}</div>
+                            <span class="badge">عرض الأقسام</span>
                         </div>
                         <div class="subcategories" id="sub-${index}">
                 `;
 
                 cat.subs.forEach((sub) => {
-                    catHTML += `
-                        <div class="subcategory-block">
-                            <div class="subcategory-header">
-                                <span>📂 ${sub.name} (${sub.services.length})</span>
-                            </div>
-                    `;
-
+                    catHTML += `<div class="subcategory-block"><div class="subcategory-header">📂 ${sub.name}</div>`;
                     sub.services.forEach((service) => {
                         catHTML += `
                             <div class="service-item">
-                                <span>🔹 ${service}</span>
-                                <button class="btn-main" style="padding: 3px 8px; font-size: 0.75rem;">حجز الخدمة</button>
+                                <div class="service-info">
+                                    <strong>🔹 ${service}</strong>
+                                    <span class="merchant-location"><i class="fas fa-map-marker-alt"></i> السعودية - جازان</span>
+                                    <span class="rating"><i class="fas fa-star"></i> 5.0</span>
+                                </div>
+                                <div class="action-btns">
+                                    <button class="btn-main" style="padding: 4px 8px; font-size: 0.75rem;" onclick="copyPhone()">نسخ الرقم 📞</button>
+                                    <button class="btn-main" style="padding: 4px 8px; font-size: 0.75rem; background:#3b82f6;" onclick="openModal('bookingModal')">حجز</button>
+                                </div>
                             </div>
                         `;
                     });
-
                     catHTML += `</div>`;
                 });
 
@@ -272,56 +255,100 @@
             });
         }
 
+        function sendOTP() {
+            const phone = document.getElementById('inputPhone').value.trim();
+            if(!phone) { alert("يرجى إدخال رقم الجوال"); return; }
+
+            // التحقق هل الرقم يتبع لأحد الأدوار الإدارية؟
+            const isOwner = systemUsers.owners.includes(phone);
+            const isAgent = systemUsers.agents.includes(phone);
+            const isMerchant = systemUsers.merchants.includes(phone);
+
+            if(!isOwner && !isAgent && !isMerchant) {
+                alert("عذراً، هذا الرقم غير مسجل كشريك في النظام! يرجى التواصل مع المفوض أو المالك لتسجيل رقمك.");
+                return;
+            }
+
+            tempPhone = phone;
+            document.getElementById('stepPhone').style.display = 'none';
+            document.getElementById('stepOTP').style.display = 'block';
+            alert("تم إرسال رمز OTP إلى جوالك (رمز التجربة هو: 1234)");
+        }
+
+        function verifyOTP() {
+            const otp = document.getElementById('inputOTP').value.trim();
+            if(otp === "1234") {
+                closeModal('loginModal');
+                
+                // تحديد الدور وتفعيل اللوحة المناسبة
+                document.getElementById('sessionBar').style.display = 'flex';
+                document.getElementById('sessionPhone').innerText = tempPhone;
+                document.getElementById('authBtn').style.display = 'none';
+
+                if(systemUsers.owners.includes(tempPhone)) {
+                    document.getElementById('sessionRole').innerText = "المالك 👑";
+                    document.getElementById('ownerPanel').classList.add('active');
+                } else if(systemUsers.agents.includes(tempPhone)) {
+                    document.getElementById('sessionRole').innerText = "المفوض 💼";
+                    document.getElementById('agentCode').value = "AGENT-" + tempPhone.slice(-4);
+                    document.getElementById('agentPanel').classList.add('active');
+                } else if(systemUsers.merchants.includes(tempPhone)) {
+                    document.getElementById('sessionRole').innerText = "التاجر 🏪";
+                    document.getElementById('merchantPanel').classList.add('active');
+                }
+            } else {
+                alert("رمز OTP غير صحيح!");
+            }
+        }
+
+        function registerAgent() {
+            const phone = document.getElementById('newAgentPhone').value.trim();
+            if(phone) {
+                systemUsers.agents.push(phone);
+                alert(`تم تسجيل المفوض برقم (${phone}) بنجاح! يمكنه الآن تسجيل الدخول عبر رقمه.`);
+                document.getElementById('newAgentPhone').value = '';
+            }
+        }
+
+        function registerMerchant() {
+            const phone = document.getElementById('newMerchantPhone').value.trim();
+            if(phone) {
+                systemUsers.merchants.push(phone);
+                alert(`تم تسجيل التاجر برقم (${phone}) بنجاح! يمكن للتاجر الآن تسجيل الدخول برقمه.`);
+                document.getElementById('newMerchantPhone').value = '';
+            }
+        }
+
+        function logout() {
+            document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active'));
+            document.getElementById('sessionBar').style.display = 'none';
+            document.getElementById('authBtn').style.display = 'block';
+            
+            // إعادة ضبط نافذة الدخول
+            document.getElementById('stepPhone').style.display = 'block';
+            document.getElementById('stepOTP').style.display = 'none';
+            document.getElementById('inputPhone').value = '';
+            document.getElementById('inputOTP').value = '';
+        }
+
         function toggleCategory(index) {
             const el = document.getElementById(`sub-${index}`);
             el.style.display = el.style.display === 'block' ? 'none' : 'block';
         }
 
-        function switchTab(panelId, btn) {
-            document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(panelId).classList.add('active');
-            btn.classList.add('active');
-        }
-
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        function openSubModal() {
-            const select = document.getElementById('mainCategorySelect');
-            select.innerHTML = '';
-            data.forEach((cat, index) => {
-                select.innerHTML += `<option value="${index}">${cat.title}</option>`;
-            });
-            openModal('addSubModal');
+        function copyPhone() {
+            copyCounter++;
+            document.getElementById('copyCounterCount').innerText = copyCounter;
+            alert("تم نسخ الرقم بنجاح!");
         }
 
-        function addMainCategory() {
-            const title = document.getElementById('newMainTitle').value;
-            if(title) {
-                data.push({ id: Date.now(), title: title, subs: [] });
-                renderCategories();
-                closeModal('addMainModal');
-                document.getElementById('newMainTitle').value = '';
-            }
-        }
-
-        function addSubCategory() {
-            const mainIndex = document.getElementById('mainCategorySelect').value;
-            const subTitle = document.getElementById('newSubTitle').value;
-            if(subTitle && mainIndex !== '') {
-                data[mainIndex].subs.push({ name: subTitle, services: [] });
-                renderCategories();
-                closeModal('addSubModal');
-                document.getElementById('newSubTitle').value = '';
-            }
-        }
-
-        function deleteMainCategory(index) {
-            if(confirm("هل أنت تأكد من رغبتك في حذف هذا القسم؟")) {
-                data.splice(index, 1);
-                renderCategories();
-            }
+        function submitBooking(e) {
+            e.preventDefault();
+            alert("تم إرسال طلب الحجز بنجاح!");
+            closeModal('bookingModal');
         }
 
         renderCategories();
