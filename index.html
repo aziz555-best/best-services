@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة BEST - للخدمات الشاملة</title>
+    <title>BEST - منصة الخدمات الشاملة</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -18,106 +18,116 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg-light); color: var(--secondary); padding-bottom: 50px; }
 
-        header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: var(--white); padding: 25px 15px; text-align: center; box-shadow: var(--shadow); }
-        header h1 { font-size: 2rem; margin-bottom: 5px; }
+        /* Header & Logo */
+        header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: var(--white); padding: 20px 15px; text-align: center; box-shadow: var(--shadow); }
+        .logo-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 5px; }
+        .logo-box { background: var(--white); color: var(--primary-dark); font-weight: 900; font-size: 1.8rem; padding: 5px 15px; border-radius: 8px; letter-spacing: 2px; }
         header p { font-size: 0.95rem; opacity: 0.9; }
 
         .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
 
-        /* Control Panel for Admin/Agent */
-        .admin-controls { background: var(--white); padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow); border-right: 5px solid var(--primary); }
-        .admin-controls h3 { margin-bottom: 10px; font-size: 1.1rem; color: var(--secondary); }
-        .admin-btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
-        
-        button { cursor: pointer; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; transition: 0.2s; }
+        /* Tabs for Control Panels */
+        .panel-tabs { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .tab-btn { background: #e5e7eb; color: var(--secondary); border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .tab-btn.active { background: var(--primary); color: var(--white); }
+
+        .panel-content { display: none; background: var(--white); padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow); border-top: 4px solid var(--primary); }
+        .panel-content.active { display: block; }
+
+        button { cursor: pointer; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; }
         .btn-main { background: var(--primary); color: var(--white); }
         .btn-main:hover { background: var(--primary-dark); }
         .btn-danger { background: #ef4444; color: var(--white); }
-        .btn-danger:hover { background: #dc2626; }
         .btn-secondary { background: #6b7280; color: var(--white); }
 
-        /* Main Categories */
+        /* Main Categories Layout */
         .category-card { background: var(--white); border-radius: 10px; margin-bottom: 15px; box-shadow: var(--shadow); overflow: hidden; }
         .category-header { padding: 18px; background: #fff; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #eee; }
-        .category-title { font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        .category-title { font-size: 1.15rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
         .badge { background: #e5e7eb; color: var(--secondary); padding: 3px 10px; border-radius: 12px; font-size: 0.85rem; }
 
         .subcategories { display: none; padding: 15px; background: #fafafa; }
         .subcategory-block { background: var(--white); border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
-        .subcategory-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 1.05rem; margin-bottom: 10px; color: var(--primary-dark); }
+        .subcategory-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 1rem; margin-bottom: 10px; color: var(--primary-dark); }
 
-        /* Service Item */
         .service-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #e5e7eb; }
         .service-item:last-child { border-bottom: none; }
-        .service-actions { display: flex; gap: 8px; }
 
-        /* Modal Forms */
+        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: var(--white); padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
-        .modal-content h3 { margin-bottom: 15px; }
+        .modal-content { background: var(--white); padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: bold; }
         .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
-
-        .rating { color: #f59e0b; margin-top: 4px; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>منصة BEST الخدماتية</h1>
-        <p>منصتك الشاملة لجميع الخدمات والأعمال</p>
+        <div class="logo-container">
+            <div class="logo-box">BEST</div>
+            <h1 style="font-size: 1.5rem;">منصة الخدمات الشاملة</h1>
+        </div>
+        <p>ربط العملاء والتجار والمفوضين في مكان واحد</p>
     </header>
 
     <div class="container">
 
-        <!-- Admin / Agent Bar -->
-        <div class="admin-controls">
-            <h3><i class="fas fa-user-shield"></i> لوحة التحكم (المالك / المفوض)</h3>
-            <div class="admin-btn-group">
+        <!-- Control Panel Tabs -->
+        <div class="panel-tabs">
+            <button class="tab-btn active" onclick="switchTab('ownerPanel', this)">👑 لوحة المالك</button>
+            <button class="tab-btn" onclick="switchTab('agentPanel', this)">💼 لوحة المفوض</button>
+            <button class="tab-btn" onclick="switchTab('merchantPanel', this)">🏪 لوحة التاجر</button>
+        </div>
+
+        <!-- 👑 1. Owner Panel -->
+        <div id="ownerPanel" class="panel-content active">
+            <h3>👑 لوحة التحكم الشاملة للمالك</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">إدارة الأقسام الرئيسية والفرعية والإحصائيات الكلية.</p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
                 <button class="btn-main" onclick="openModal('addMainModal')"><i class="fas fa-plus"></i> إضافة قسم رئيسي</button>
-                <button class="btn-main" onclick="openModal('addSubModal')"><i class="fas fa-folder-plus"></i> إضافة قسم فرعي</button>
+                <button class="btn-main" onclick="openSubModal()"><i class="fas fa-folder-plus"></i> إضافة قسم فرعي</button>
             </div>
         </div>
 
-        <!-- Categories List Container -->
+        <!-- 💼 2. Agent Panel -->
+        <div id="agentPanel" class="panel-content">
+            <h3>💼 لوحة المفوض / المسوّق</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">متابعة الأداء والكود التسويقي الخاص بك.</p>
+            <div class="form-group">
+                <label>كود التتبع الخاص بك:</label>
+                <input type="text" value="AGENT-BEST-101" readonly style="background: #f0f0f0; font-weight:bold;">
+            </div>
+            <p>إجمالي الحجوزات المسجلة عبر كودك: <strong>12 حجز</strong></p>
+        </div>
+
+        <!-- 🏪 3. Merchant Panel -->
+        <div id="merchantPanel" class="panel-content">
+            <h3>🏪 لوحة التحكم للتاجر</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">إضافة الموقع والجغرافيا وقبول/رفض الحجوزات.</p>
+
+            <div class="form-group">
+                <label>الدولة / المنطقة / المدينة / الشارع</label>
+                <input type="text" placeholder="السعودية - جازان - أبو عريش - شارع الملك فهد">
+            </div>
+            <div class="form-group">
+                <label>رابط الموقع على الخريطة (Google Maps)</label>
+                <input type="url" placeholder="https://maps.google.com/...">
+            </div>
+            <button class="btn-main">تحديث بيانات المتجر 📍</button>
+        </div>
+
+        <!-- Categories List -->
         <div id="categoriesContainer"></div>
 
-    </div>
-
-    <!-- Modal Booking -->
-    <div class="modal" id="bookingModal">
-        <div class="modal-content">
-            <h3><i class="fas fa-calendar-check"></i> طلب حجز خدمة</h3>
-            <form id="bookingForm" onsubmit="submitBooking(event)">
-                <div class="form-group">
-                    <label>اسم العميل</label>
-                    <input type="text" id="clientName" required>
-                </div>
-                <div class="form-group">
-                    <label>رقم الجوال</label>
-                    <input type="tel" id="clientPhone" required>
-                </div>
-                <div class="form-group">
-                    <label>كود المفوض / المسوق (إن وجد)</label>
-                    <input type="text" id="agentCode" placeholder="مثال: AGENT10">
-                </div>
-                <div class="form-group">
-                    <label>موقع العميل (رابط Google Maps)</label>
-                    <input type="url" id="clientLocation" placeholder="https://maps.google.com/...">
-                </div>
-                <button type="submit" class="btn-main" style="width: 100%;">تأكيد الطلب والحجز</button>
-                <button type="button" class="btn-secondary" style="width: 100%; margin-top: 8px;" onclick="closeModal('bookingModal')">إلغاء</button>
-            </form>
-        </div>
     </div>
 
     <!-- Modal Add Main Category -->
     <div class="modal" id="addMainModal">
         <div class="modal-content">
-            <h3>إضافة قسم رئيسي جديد</h3>
+            <h3>إضافة قسم رئيسي</h3>
             <div class="form-group">
-                <label>اسم القسم الرئيسي</label>
+                <label>اسم القسم الرئيسي الجديد</label>
                 <input type="text" id="newMainTitle">
             </div>
             <button class="btn-main" onclick="addMainCategory()">حفظ</button>
@@ -125,8 +135,24 @@
         </div>
     </div>
 
+    <!-- Modal Add Sub Category (FIXED & WORKING) -->
+    <div class="modal" id="addSubModal">
+        <div class="modal-content">
+            <h3>إضافة قسم فرعي جديد</h3>
+            <div class="form-group">
+                <label>اختر القسم الرئيسي</label>
+                <select id="mainCategorySelect"></select>
+            </div>
+            <div class="form-group">
+                <label>اسم القسم الفرعي الجديد</label>
+                <input type="text" id="newSubTitle">
+            </div>
+            <button class="btn-main" onclick="addSubCategory()">إضافة</button>
+            <button class="btn-secondary" onclick="closeModal('addSubModal')">إلغاء</button>
+        </div>
+    </div>
+
     <script>
-        // Initial Complete Structure
         let data = [
             {
                 id: 1,
@@ -215,13 +241,13 @@
                             </div>
                             <div>
                                 <span class="badge">${totalServices} خدمة</span>
-                                <button class="btn-danger" style="padding:4px 8px; font-size:0.8rem;" onclick="event.stopPropagation(); deleteMainCategory(${index})"><i class="fas fa-trash"></i></button>
+                                <button class="btn-danger" style="padding:3px 8px; font-size:0.75rem;" onclick="event.stopPropagation(); deleteMainCategory(${index})"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
                         <div class="subcategories" id="sub-${index}">
                 `;
 
-                cat.subs.forEach((sub, subIndex) => {
+                cat.subs.forEach((sub) => {
                     catHTML += `
                         <div class="subcategory-block">
                             <div class="subcategory-header">
@@ -232,13 +258,8 @@
                     sub.services.forEach((service) => {
                         catHTML += `
                             <div class="service-item">
-                                <div>
-                                    <span>🔹 ${service}</span>
-                                    <div class="rating"><i class="fas fa-star"></i> 5.0 (تقييم ممتاز)</div>
-                                </div>
-                                <div class="service-actions">
-                                    <button class="btn-main" style="padding: 4px 8px; font-size: 0.8rem;" onclick="openModal('bookingModal')">حجز</button>
-                                </div>
+                                <span>🔹 ${service}</span>
+                                <button class="btn-main" style="padding: 3px 8px; font-size: 0.75rem;">حجز الخدمة</button>
                             </div>
                         `;
                     });
@@ -256,8 +277,24 @@
             el.style.display = el.style.display === 'block' ? 'none' : 'block';
         }
 
+        function switchTab(panelId, btn) {
+            document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(panelId).classList.add('active');
+            btn.classList.add('active');
+        }
+
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function openSubModal() {
+            const select = document.getElementById('mainCategorySelect');
+            select.innerHTML = '';
+            data.forEach((cat, index) => {
+                select.innerHTML += `<option value="${index}">${cat.title}</option>`;
+            });
+            openModal('addSubModal');
+        }
 
         function addMainCategory() {
             const title = document.getElementById('newMainTitle').value;
@@ -269,20 +306,24 @@
             }
         }
 
+        function addSubCategory() {
+            const mainIndex = document.getElementById('mainCategorySelect').value;
+            const subTitle = document.getElementById('newSubTitle').value;
+            if(subTitle && mainIndex !== '') {
+                data[mainIndex].subs.push({ name: subTitle, services: [] });
+                renderCategories();
+                closeModal('addSubModal');
+                document.getElementById('newSubTitle').value = '';
+            }
+        }
+
         function deleteMainCategory(index) {
-            if(confirm("هل أنت تأكد من رغبتك في حذف هذا القسم بجميع محتوياته؟")) {
+            if(confirm("هل أنت تأكد من رغبتك في حذف هذا القسم؟")) {
                 data.splice(index, 1);
                 renderCategories();
             }
         }
 
-        function submitBooking(e) {
-            e.preventDefault();
-            alert("تم إرسال طلب الحجز بنجاح ومشاركته مع التاجر والمفوض!");
-            closeModal('bookingModal');
-        }
-
-        // Initialize Render
         renderCategories();
     </script>
 </body>
