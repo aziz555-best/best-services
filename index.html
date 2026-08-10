@@ -28,7 +28,7 @@
 
         .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
 
-        /* Panels Container */
+        /* Control Panels Area */
         .panel-content { display: none; background: var(--white); padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow); border-top: 4px solid var(--primary); }
         .panel-content.active { display: block; }
 
@@ -43,21 +43,21 @@
 
         /* Search & Filter Bar */
         .search-filter-box { background: var(--white); padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow); display: flex; gap: 10px; flex-wrap: wrap; }
-        .search-filter-box input, .search-filter-box select { flex: 1; min-width: 150px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+        .search-filter-box input, .search-filter-box select { flex: 1; min-width: 160px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
 
         /* Categories Layout */
         .category-card { background: var(--white); border-radius: 10px; margin-bottom: 15px; box-shadow: var(--shadow); overflow: hidden; }
         .category-header { padding: 18px; background: #fff; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #eee; }
         .category-title { font-size: 1.15rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
-        .badge { background: #e5e7eb; color: var(--secondary); padding: 3px 10px; border-radius: 12px; font-size: 0.85rem; }
+        .badge { background: #e5e7eb; color: var(--secondary); padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; }
 
         .subcategories { display: none; padding: 15px; background: #fafafa; }
         .subcategory-block { background: var(--white); border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
-        .subcategory-header { font-weight: bold; font-size: 1rem; margin-bottom: 10px; color: var(--primary-dark); }
+        .subcategory-header { font-weight: bold; font-size: 1rem; margin-bottom: 10px; color: var(--primary-dark); border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
 
         .service-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed #e5e7eb; flex-wrap: wrap; gap: 10px; }
         .service-item:last-child { border-bottom: none; }
-        .service-info { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+        .service-info { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 200px; }
         .service-img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; border: 1px solid #ddd; }
         .price-tag { color: var(--primary-dark); font-weight: bold; font-size: 1.05rem; }
         .merchant-location { font-size: 0.8rem; color: #666; }
@@ -67,16 +67,19 @@
 
         /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: var(--white); padding: 25px; border-radius: 12px; width: 90%; max-width: 450px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: var(--white); padding: 25px; border-radius: 12px; width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: bold; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+        
+        .quick-login-hints { background: #f0fdf4; border: 1px dashed var(--primary); padding: 10px; border-radius: 6px; margin-bottom: 12px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
+    <!-- Header & Logo -->
     <header>
-        <button class="login-btn-header" id="authBtn" onclick="openModal('loginModal')"><i class="fas fa-lock"></i> دخول الشركاء</button>
+        <button class="login-btn-header" id="authBtn" onclick="openModal('loginModal')"><i class="fas fa-lock"></i> دخول الشركاء / المالك</button>
         <div class="logo-container">
             <div class="logo-box">BEST</div>
             <h1 style="font-size: 1.5rem;">منصة الخدمات الشاملة</h1>
@@ -92,10 +95,11 @@
             <button class="btn-danger" style="padding: 4px 10px; font-size: 0.8rem;" onclick="logout()">تسجيل خروج</button>
         </div>
 
-        <!-- 👑 1. Owner Panel -->
+        <!-- 👑 1. Owner Panel (لوحة المالك) -->
         <div id="ownerPanel" class="panel-content">
-            <h3>👑 لوحة المالك</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">تسجيل المفوضين وإدارة المنصة.</p>
+            <h3 style="color: #8b5cf6;"><i class="fas fa-crown"></i> لوحة التحكم للمالك 👑</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">تسجيل المفوضين وإدارة كافة صلاحيات المنصة.</p>
+            
             <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px;">
                 <h4 style="font-size: 0.95rem; margin-bottom: 8px;">➕ إضافة رقم مفوض جديد:</h4>
                 <div style="display: flex; gap: 8px;">
@@ -103,15 +107,19 @@
                     <button class="btn-main" onclick="registerAgent()">اعتماد المفوض</button>
                 </div>
             </div>
-            <p><strong>📊 الإحصائيات:</strong> عدد تفاعلات النسخ والتواصل: <span id="copyCounterCount" style="color:var(--primary-dark); font-weight:bold;">0</span></p>
+            
+            <div style="background: #f0fdf4; padding: 12px; border: 1px solid #bbf7d0; border-radius: 8px;">
+                <p><strong>📊 الإحصائيات العامة للمالك:</strong></p>
+                <p style="margin-top: 5px;">عدد تفاعلات العميل (النسخ والحجز): <span id="copyCounterCount" style="color:var(--primary-dark); font-weight:bold; font-size: 1.1rem;">0</span> مرة</p>
+            </div>
         </div>
 
         <!-- 💼 2. Agent Panel -->
         <div id="agentPanel" class="panel-content">
-            <h3>💼 لوحة المفوض</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">إضافة التجار تحت إشرافك.</p>
+            <h3>💼 لوحة المفوض / المسوق</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">إضافة التجار التابعين لك ومتابعة أدائهم.</p>
             <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px;">
-                <h4 style="font-size: 0.95rem; margin-bottom: 8px;">➕ إضافة رقم تاجر جديد:</h4>
+                <h4 style="font-size: 0.95rem; margin-bottom: 8px;">➕ إضافة رقم تاجر جديد تحت إشرافك:</h4>
                 <div style="display: flex; gap: 8px;">
                     <input type="tel" id="newMerchantPhone" placeholder="05xxxxxxxx" style="flex: 1; padding: 6px;">
                     <button class="btn-main" onclick="registerMerchant()">تسجيل التاجر</button>
@@ -119,30 +127,30 @@
             </div>
         </div>
 
-        <!-- 🏪 3. Merchant Panel (التاجر لإضافة المنتجات وال صور والأسعار) -->
+        <!-- 🏪 3. Merchant Panel -->
         <div id="merchantPanel" class="panel-content">
-            <h3>🏪 لوحة التاجر - إضافة خدمات ومنتجات</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">يمكنك إضافة صور وأسعار ووصف منتجاتك وعنوانك هنا.</p>
+            <h3>🏪 لوحة التحكم للتاجر</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">إضافة الخدمات، الصور، الأسعار، والوصف تفصيلياً.</p>
 
             <div style="background: #f9fafb; padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px;">
-                <h4 style="margin-bottom: 10px; color: var(--primary-dark);">➕ إضافة منتج / خدمة جديدة:</h4>
+                <h4 style="margin-bottom: 10px; color: var(--primary-dark);">➕ إضافة منتج أو خدمة جديدة:</h4>
                 <div class="form-group">
-                    <label>اسم المنتج أو الخدمة:</label>
-                    <input type="text" id="pTitle" placeholder="مثال: صيانة مكيفات سبليت">
+                    <label>اسم المنتج / الخدمة:</label>
+                    <input type="text" id="pTitle" placeholder="مثال: تركيب غرف نوم ديكور">
                 </div>
                 <div class="form-group">
                     <label>السعر (ريال):</label>
-                    <input type="number" id="pPrice" placeholder="150">
+                    <input type="number" id="pPrice" placeholder="250">
                 </div>
                 <div class="form-group">
-                    <label>وصف المنتج / الخدمة:</label>
-                    <textarea id="pDesc" rows="2" placeholder="اكتب تفاصيل الخدمة والمواصفات..."></textarea>
+                    <label>وصف الخدمة / المنتج:</label>
+                    <textarea id="pDesc" rows="2" placeholder="أدخل الوصف التفصيلي وشروط الخدمة..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>رابط صورة المنتج/الخدمة:</label>
                     <input type="url" id="pImg" placeholder="https://via.placeholder.com/150">
                 </div>
-                <button class="btn-main" onclick="addNewProductByMerchant()">نشر المنتج في المنصة 🚀</button>
+                <button class="btn-main" onclick="addNewProductByMerchant()">نشر الخدمة في المنصة 🚀</button>
             </div>
         </div>
 
@@ -151,18 +159,18 @@
             <input type="text" id="searchInput" placeholder="🔍 ابحث باسم الخدمة أو المدينة..." onkeyup="filterServices()">
             <select id="priceFilter" onchange="filterServices()">
                 <option value="all">ترتيب حسب السعر</option>
-                <option value="low">السعر: من الأقل للأعلى</option>
-                <option value="high">السعر: من الأعلى للأقل</option>
+                <option value="low">السعر: الأقل إلى الأعلى</option>
+                <option value="high">السعر: الأعلى إلى الأقل</option>
             </select>
             <select id="ratingFilter" onchange="filterServices()">
-                <option value="all">الترحيب بالجودة والتقييم</option>
-                <option value="5">⭐⭐⭐⭐⭐ 5 نجوم فقط</option>
+                <option value="all">الجودة والتقييم</option>
+                <option value="5">⭐⭐⭐⭐⭐ 5 نجوم</option>
                 <option value="4">⭐⭐⭐⭐ 4 نجوم وأعلى</option>
             </select>
         </div>
 
-        <!-- Public Services List (المجلدات الـ 8 المكتملة) -->
-        <h3 style="margin-bottom: 15px; color: var(--secondary);"><i class="fas fa-th-list"></i> جميع المجلدات والخدمات</h3>
+        <!-- Public Services List (شاشة العميل - المجلدات الـ 8 المكتملة) -->
+        <h3 style="margin-bottom: 15px; color: var(--secondary);"><i class="fas fa-th-list"></i> جميع المجلدات والأقسام الفرعية</h3>
         <div id="categoriesContainer"></div>
 
     </div>
@@ -170,18 +178,26 @@
     <!-- Modal OTP Login -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 10px;"><i class="fas fa-user-shield"></i> تسجيل دخول الشركاء</h3>
-            <p style="font-size: 0.8rem; color: #666; margin-bottom: 15px;">أدخل رقم الجوال المسجل للتحقق عبر رمز OTP</p>
+            <h3 style="margin-bottom: 10px;"><i class="fas fa-user-shield"></i> تسجيل دخول الشركاء والمالك</h3>
+            
+            <div class="quick-login-hints">
+                <strong>💡 للتجربة السريعة:</strong><br>
+                • جوال المالك: <code>0500000000</code><br>
+                • جوال المفوض: <code>0511111111</code><br>
+                • جوال التاجر: <code>0522222222</code><br>
+                • رمز الـ OTP التجريبي: <code>1234</code>
+            </div>
+
             <div id="stepPhone">
                 <div class="form-group">
                     <label>رقم الجوال:</label>
-                    <input type="tel" id="inputPhone" placeholder="05xxxxxxxx">
+                    <input type="tel" id="inputPhone" placeholder="0500000000">
                 </div>
                 <button class="btn-main" style="width: 100%;" onclick="sendOTP()">إرسال رمز التحقق OTP</button>
             </div>
             <div id="stepOTP" style="display: none;">
                 <div class="form-group">
-                    <label>رمز OTP (استخدم: 1234):</label>
+                    <label>رمز OTP:</label>
                     <input type="text" id="inputOTP" placeholder="1234" style="text-align: center; letter-spacing: 5px; font-weight: bold;">
                 </div>
                 <button class="btn-main" style="width: 100%;" onclick="verifyOTP()">تأكيد الدخول</button>
@@ -197,7 +213,7 @@
             <form onsubmit="submitBooking(event)">
                 <div class="form-group">
                     <label>اسم العميل:</label>
-                    <input type="text" required>
+                    <input type="text" required placeholder="أدخل اسمك الكريم">
                 </div>
                 <div class="form-group">
                     <label>رقم جوال العميل:</label>
@@ -211,8 +227,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>موقع العميل (Google Maps / الشارع):</label>
-                    <input type="text" placeholder="أدخل العنوان أو رابط اللوكيشن">
+                    <label>العنوان / رابط الموقع (Google Maps):</label>
+                    <input type="text" placeholder="السعودية - جازان - أبو عريش...">
                 </div>
                 <button type="submit" class="btn-main" style="width: 100%;">تأكيد وإرسال الطلب</button>
                 <button type="button" class="btn-secondary" style="width: 100%; margin-top: 8px;" onclick="closeModal('bookingModal')">إلغاء</button>
@@ -230,61 +246,68 @@
         let tempPhone = "";
         let copyCounter = 0;
 
-        // القائمة الشاملة لجميع المجلدات الـ 8 الكاملة
+        // 🗂️ البيانات الكاملة المعتمدة 100% (8 مجلدات رئيسية + جميع الفروع + الصور والأسعار)
         let data = [
             {
                 title: "1. خدمات الأعمال والتقنية",
                 subs: [
-                    { name: "التقنية والبرمجة", services: [{ title: "تصميم وإنشاء مواقع وتطبيقات", price: 1500, rating: 5, img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=150" }, { title: "صيانة شبكات وكاميرات مراقبة", price: 300, rating: 5, img: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=150" }] },
-                    { name: "التسويق والتصميم", services: [{ title: "إدارة حسابات التواصل الاجتماعي", price: 800, rating: 4, img: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=150" }] },
-                    { name: "خدمات حكومية وإدارية", services: [{ title: "تعقيب معاملات وشؤون تجارية", price: 200, rating: 5, img: "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=150" }] }
+                    { name: "التقنية والبرمجة", services: [{ title: "تصميم وإنشاء مواقع وتطبيقات", price: 1500, rating: 5, img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=150" }, { title: "صيانة شبكات وكاميرات مراقبة", price: 300, rating: 5, img: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=150" }, { title: "صيانة جوالات وحاسب آلي", price: 100, rating: 4, img: "https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?w=150" }] },
+                    { name: "التسويق والتصميم", services: [{ title: "إدارة حسابات التواصل الاجتماعي", price: 800, rating: 5, img: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=150" }, { title: "تصميم شعارات وهويات بصرية", price: 400, rating: 5, img: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=150" }] },
+                    { name: "خدمات حكومية وإدارية", services: [{ title: "تعقيب معاملات وشؤون تجارية", price: 200, rating: 5, img: "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=150" }, { title: "استشارات قانونية ومحاسبية", price: 350, rating: 5, img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=150" }] }
                 ]
             },
             {
                 title: "2. المقاولات والبناء",
                 subs: [
-                    { name: "البناء والتأسيس", services: [{ title: "المقاولات العامة والمباني (عظم / مفتاح)", price: 50000, rating: 5, img: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?w=150" }] },
-                    { name: "التشطيبات والديكور", services: [{ title: "دهانات وورق جدران وديكورات فوم", price: 1200, rating: 5, img: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=150" }] },
-                    { name: "الترميم والصيانة المعمارية", services: [{ title: "عزل اسطح وخزانات (مائي وحراري)", price: 1800, rating: 4, img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=150" }] }
+                    { name: "البناء والتأسيس", services: [{ title: "المقاولات العامة والمباني (عظم / مفتاح)", price: 50000, rating: 5, img: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?w=150" }, { title: "أعمال الحفر والردم والتأسيس", price: 5000, rating: 4, img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=150" }] },
+                    { name: "التشطيبات والديكور", services: [{ title: "دهانات وورق جدران وديكورات فوم", price: 1200, rating: 5, img: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=150" }, { title: "تركيب سيراميك ورخام وباركيه", price: 2000, rating: 5, img: "https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?w=150" }, { title: "أعمال جبس بورد وأسقف مستعارة", price: 1500, rating: 4, img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=150" }] },
+                    { name: "الترميم والصيانة المعمارية", services: [{ title: "ترميم وتجديد المنازل والمباني", price: 8000, rating: 5, img: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=150" }, { title: "عزل اسطح وخزانات (مائي وحراري)", price: 1800, rating: 5, img: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=150" }] }
                 ]
             },
             {
                 title: "3. العقارات",
                 subs: [
-                    { name: "بيع العقارات", services: [{ title: "بيع فلل وشقق سكنية", price: 650000, rating: 5, img: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=150" }] },
-                    { name: "إيجار العقارات", services: [{ title: "شقق وفلل للإيجار (سنوي / شهري)", price: 2000, rating: 5, img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=150" }] }
+                    { name: "بيع العقارات", services: [{ title: "بيع اراضي ومخططات سكنية", price: 120000, rating: 5, img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=150" }, { title: "بيع فلل وشقق سكنية", price: 650000, rating: 5, img: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=150" }] },
+                    { name: "إيجار العقارات", services: [{ title: "شقق وفلل للإيجار (سنوي / شهري)", price: 2000, rating: 5, img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=150" }, { title: "محلات ومكاتب ومستودعات للإيجار", price: 3500, rating: 4, img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=150" }] },
+                    { name: "إدارة واستثمار العقار", services: [{ title: "إدارة أملاك وصيانة عقارات", price: 1000, rating: 5, img: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=150" }] }
                 ]
             },
             {
                 title: "4. البيع والشراء - حراج وشامل",
                 subs: [
-                    { name: "بيع وشراء السيارات والمركبات", services: [{ title: "سيارات جديدة ومستعملة للبيع", price: 45000, rating: 5, img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=150" }] },
-                    { name: "الأجهزة والإلكترونيات", services: [{ title: "جوالات وأجهزة ذكية", price: 2500, rating: 5, img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150" }] }
+                    { name: "بيع وشراء السيارات والمركبات", services: [{ title: "سيارات جديدة ومستعملة للبيع", price: 45000, rating: 5, img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=150" }, { title: "قطع غيار وتشاليح ومعدات", price: 500, rating: 4, img: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=150" }] },
+                    { name: "الأجهزة والإلكترونيات", services: [{ title: "جوالات وأجهزة ذكية جديدة ومستعملة", price: 2500, rating: 5, img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150" }, { title: "أجهزة منزلية وكهربائية", price: 800, rating: 4, img: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=150" }] },
+                    { name: "الأثاث والمستلزمات", services: [{ title: "أثاث منزلي ومكتبي للبيع", price: 1500, rating: 5, img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=150" }] }
                 ]
             },
             {
                 title: "5. المواد الغذائية والمطاعم",
                 subs: [
-                    { name: "المطاعم والمأكولات", services: [{ title: "وجبات سريعة وشواء", price: 35, rating: 5, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150" }] },
-                    { name: "المواد الغذائية والتموينات", services: [{ title: "خضار وفواكه طازجة وحوم", price: 50, rating: 5, img: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=150" }] }
+                    { name: "المطاعم والمأكولات", services: [{ title: "وجبات سريعة وشواء ومطابخ", price: 35, rating: 5, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150" }] },
+                    { name: "المقاهي والحلا", services: [{ title: "كافيهات وحلويات شرقية وغربية", price: 25, rating: 5, img: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=150" }] },
+                    { name: "المواد الغذائية والتموينات", services: [{ title: "خضار وفواكه طازجة ولحوم وتوزيع مياه", price: 60, rating: 5, img: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=150" }] }
                 ]
             },
             {
                 title: "6. الصحة والمراكز الطبية",
                 subs: [
-                    { name: "العيادات التخصصية", services: [{ title: "عيادات أسنان وجلدية وليزر", price: 150, rating: 5, img: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=150" }] }
+                    { name: "المستشفيات والمراكز التخصصية", services: [{ title: "مستشفيات ومجمعات طبية عامة", price: 200, rating: 5, img: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=150" }] },
+                    { name: "العيادات التخصصية", services: [{ title: "عيادات أسنان وجلدية وليزر وتجميل", price: 150, rating: 5, img: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=150" }] },
+                    { name: "الخدمات الطبية المساندة", services: [{ title: "صيدليات ورعاية صحية منزلية", price: 100, rating: 4, img: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=150" }] }
                 ]
             },
             {
                 title: "7. الخدمات المنزلية والصيانة",
                 subs: [
-                    { name: "صيانة وإصلاح", services: [{ title: "صيانة وتنظيف مكيفات سبليت", price: 100, rating: 5, img: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=150" }] }
+                    { name: "صيانة وإصلاح", services: [{ title: "صيانة وتنظيف مكيفات سبليت وشباك", price: 100, rating: 5, img: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=150" }, { title: "سباكة وتأسيس شبكات مياه وكهرباء", price: 150, rating: 5, img: "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=150" }] },
+                    { name: "نظافة وتعقيم", services: [{ title: "تنظيف منازل ومكافحة حشرات", price: 300, rating: 4, img: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=150" }] }
                 ]
             },
             {
                 title: "8. خدمات السيارات والنقل",
                 subs: [
-                    { name: "النقل واللوجستيات", services: [{ title: "سطحات نقل سيارات ونقل عفش", price: 120, rating: 5, img: "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=150" }] }
+                    { name: "صيانة ورش السيارات", services: [{ title: "ميكانيكا وفحص كمبيوتر وتغيير زيوت", price: 80, rating: 5, img: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=150" }] },
+                    { name: "النقل واللوجستيات", services: [{ title: "سطحات نقل سيارات ونقل عفش وتغليف", price: 120, rating: 5, img: "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=150" }] }
                 ]
             }
         ];
@@ -294,17 +317,20 @@
             container.innerHTML = '';
 
             data.forEach((cat, index) => {
+                let totalServicesCount = cat.subs.reduce((total, sub) => total + sub.services.length, 0);
+
                 let catHTML = `
                     <div class="category-card">
                         <div class="category-header" onclick="toggleCategory(${index})">
                             <div class="category-title"><i class="fas fa-folder"></i> ${cat.title}</div>
-                            <span class="badge">تصفح الفروع</span>
+                            <span class="badge">📊 ${totalServicesCount} خدمة متوفرة</span>
                         </div>
                         <div class="subcategories" id="sub-${index}">
                 `;
 
                 cat.subs.forEach((sub) => {
-                    catHTML += `<div class="subcategory-block"><div class="subcategory-header">📂 ${sub.name}</div>`;
+                    catHTML += `<div class="subcategory-block"><div class="subcategory-header">📂 ${sub.name} (${sub.services.length})</div>`;
+                    
                     sub.services.forEach((service) => {
                         catHTML += `
                             <div class="service-item">
@@ -312,17 +338,18 @@
                                 <div class="service-info">
                                     <strong>🔹 ${service.title}</strong>
                                     <span class="price-tag">${service.price} ريال</span>
-                                    <span class="merchant-location"><i class="fas fa-map-marker-alt"></i> السعودية - جازان</span>
-                                    <span class="rating"><i class="fas fa-star"></i> ${service.rating}.0 (ممتاز)</span>
+                                    <span class="merchant-location"><i class="fas fa-map-marker-alt"></i> السعودية - جازان - أبو عريش</span>
+                                    <span class="rating"><i class="fas fa-star"></i> ${service.rating}.0 (تقييم ممتاز)</span>
                                 </div>
                                 <div class="action-btns">
                                     <button class="btn-main" style="padding: 4px 8px; font-size: 0.75rem;" onclick="copyPhone()">نسخ الرقم 📞</button>
                                     <button class="btn-delivery" style="padding: 4px 8px; font-size: 0.75rem;" onclick="openBookingWithDelivery('delivery')">طلب توصيل 🚚</button>
-                                    <button class="btn-main" style="padding: 4px 8px; font-size: 0.75rem; background:#3b82f6;" onclick="openBookingWithDelivery('booking')">حجز</button>
+                                    <button class="btn-main" style="padding: 4px 8px; font-size: 0.75rem; background:#3b82f6;" onclick="openBookingWithDelivery('booking')">حجز 📅</button>
                                 </div>
                             </div>
                         `;
                     });
+
                     catHTML += `</div>`;
                 });
 
@@ -331,9 +358,7 @@
             });
         }
 
-        function filterServices() {
-            renderCategories();
-        }
+        function filterServices() { renderCategories(); }
 
         function openBookingWithDelivery(type) {
             document.getElementById('orderType').value = type;
@@ -348,11 +373,11 @@
             if(title && price) {
                 data[0].subs[0].services.push({ title: title, price: Number(price), rating: 5, img: img });
                 renderCategories();
-                alert("تم إضافة المنتج/الخدمة بنجاح وتوثيقها في المنصة!");
+                alert("تم إدراج الخدمة بنجاح وتحديث إحصائيات المنصة!");
                 document.getElementById('pTitle').value = '';
                 document.getElementById('pPrice').value = '';
             } else {
-                alert("يرجى ملء اسم المنتج والسعر!");
+                alert("يرجى إدخال اسم الخدمة والسعر!");
             }
         }
 
@@ -365,7 +390,7 @@
             const isMerchant = systemUsers.merchants.includes(phone);
 
             if(!isOwner && !isAgent && !isMerchant) {
-                alert("عذراً، هذا الرقم غير مسجل كشريك!");
+                alert("عذراً، هذا الرقم غير مسجل كشريك أو مالك في المنصة!");
                 return;
             }
 
@@ -426,7 +451,7 @@
         function copyPhone() {
             copyCounter++;
             document.getElementById('copyCounterCount').innerText = copyCounter;
-            alert("تم نسخ الرقم بنجاح ورصد الإحصائية!");
+            alert("تم نسخ الرقم بنجاح!");
         }
 
         function submitBooking(e) {
