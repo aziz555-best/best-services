@@ -29,9 +29,10 @@
         .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
 
         /* Demo View Switcher Bar */
-        .demo-switcher { background: #3b82f6; color: white; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
-        .demo-switcher button { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; }
+        .demo-switcher { background: #3b82f6; color: white; padding: 12px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
+        .demo-switcher button { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; font-size: 0.9rem; padding: 6px 12px; }
         .demo-switcher button:hover { background: white; color: #3b82f6; }
+        .demo-switcher button.active-role { background: white; color: #3b82f6; font-weight: bold; }
 
         /* Control Panels Area */
         .panel-content { display: none; background: var(--white); padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow); border-top: 4px solid var(--primary); }
@@ -43,10 +44,11 @@
         .btn-main { background: var(--primary); color: var(--white); }
         .btn-main:hover { background: var(--primary-dark); }
         .btn-danger { background: #ef4444; color: var(--white); }
+        .btn-danger:hover { background: #dc2626; }
         .btn-secondary { background: #6b7280; color: var(--white); }
         .btn-delivery { background: #f59e0b; color: var(--white); }
 
-        /* Search & Filter Bar (تم الفصل بين الخدمة والمدينة) */
+        /* Search & Filter Bar */
         .search-filter-box { background: var(--white); padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow); display: flex; gap: 10px; flex-wrap: wrap; }
         .search-filter-box input, .search-filter-box select { flex: 1; min-width: 150px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
 
@@ -56,7 +58,7 @@
         .category-title { font-size: 1.15rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
         .badge { background: #e5e7eb; color: var(--secondary); padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; }
 
-        .subcategories { display: none; padding: 15px; background: #fafafa; }
+        .subcategories { display: block; padding: 15px; background: #fafafa; }
         .subcategory-block { background: var(--white); border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
         .subcategory-header { font-weight: bold; font-size: 1rem; margin-bottom: 10px; color: var(--primary-dark); border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
 
@@ -92,119 +94,121 @@
 
     <div class="container">
 
-        <!-- 🎭 شريط النسخة التجريبية للعرض للشركاء والعميل -->
+        <!-- 🎭 شريط التبديل بين اللوحات للمعاينات التجريبية -->
         <div class="demo-switcher">
-            <span><strong>👁️ معاينة العرض التجريبي:</strong></span>
-            <button onclick="switchView('client')">📱 واجهة العميل</button>
-            <button onclick="switchView('merchant')">🏪 واجهة التاجر</button>
-            <button onclick="switchView('agent')">💼 واجهة المفوض</button>
-            <button onclick="switchView('owner')">👑 واجهة المالك</button>
+            <span><strong>👁️ التبديل بين الواجهات للمعاينة:</strong></span>
+            <button id="btnRoleClient" class="active-role" onclick="switchView('client')">📱 واجهة العميل</button>
+            <button id="btnRoleMerchant" onclick="switchView('merchant')">🏪 واجهة التاجر</button>
+            <button id="btnRoleAgent" onclick="switchView('agent')">💼 واجهة المفوض</button>
+            <button id="btnRoleOwner" onclick="switchView('owner')">👑 واجهة المالك</button>
         </div>
 
         <!-- Active User Session Bar -->
         <div class="user-session-bar" id="sessionBar">
-            <div><i class="fas fa-user-circle"></i> الوضع الحالي: <strong id="sessionRole">عميل / زائر</strong> (<span id="sessionPhone">عام</span>)</div>
-            <button class="btn-danger" style="padding: 4px 10px; font-size: 0.8rem;" onclick="logout()">إنهاء المعاينة</button>
+            <div><i class="fas fa-user-circle"></i> الوضع الحالي: <strong id="sessionRole">عميل / زائر</strong></div>
+            <button class="btn-danger" style="padding: 4px 10px; font-size: 0.8rem;" onclick="logout()">إنهاء المعاينة والتسجيل</button>
         </div>
 
-        <!-- 👑 1. Owner Panel (إدارة كاملة + حذف وإضافة الأقسام والمجلدات) -->
+        <!-- 👑 1. Owner Panel (لوحة التحكم الخاصة بالمالك) -->
         <div id="ownerPanel" class="panel-content">
-            <h3 style="color: #8b5cf6;"><i class="fas fa-crown"></i> لوحة التحكم للمالك 👑</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">إدارة المجلدات، الأقسام الفرعية، المفوضين، والإحصائيات.</p>
+            <h3 style="color: #8b5cf6; margin-bottom: 5px;"><i class="fas fa-crown"></i> لوحة الإدارة العليا (المالك) 👑</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">من هنا يمكنك التحكم الكامل: إضافة وحذف المجلدات الرئيسية، إضافة وحذف الفروع، واعتماد المفوضين.</p>
 
-            <!-- إضافة مجلد رئيسي جديد -->
-            <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px;">
-                <h4 style="font-size: 0.9rem; margin-bottom: 6px;">📁 إضافة مجلد رئيسي جديد:</h4>
-                <div style="display: flex; gap: 8px;">
-                    <input type="text" id="newMainCategoryTitle" placeholder="اسم المجلد الرئيسي..." style="flex:1; padding: 6px;">
-                    <button class="btn-main" onclick="addMainCategory()">إضافة المجلد</button>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                <!-- إضافة مجلد رئيسي جديد -->
+                <div style="background: #f3f4f6; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 6px; color: #1f2937;">📁 إضافة مجلد رئيسي جديد:</h4>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="newMainCategoryTitle" placeholder="مثال: 9. خدمات الاستشارات" style="flex:1; padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
+                        <button class="btn-main" onclick="addMainCategory()">إضافة المجلد</button>
+                    </div>
+                </div>
+
+                <!-- إضافة قسم فرعي جديد -->
+                <div style="background: #f3f4f6; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 6px; color: #1f2937;">📂 إضافة قسم فرعي داخل مجلد:</h4>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <select id="targetMainCategorySelect" style="flex:1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; min-width: 140px;"></select>
+                        <input type="text" id="newSubCategoryTitle" placeholder="اسم القسم الفرعي..." style="flex:1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; min-width: 140px;">
+                        <button class="btn-main" onclick="addSubCategory()">إضافة الفرعي</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- إضافة قسم فرعي جديد -->
-            <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px;">
-                <h4 style="font-size: 0.9rem; margin-bottom: 6px;">📂 إضافة قسم فرعي داخل مجلد:</h4>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <select id="targetMainCategorySelect" style="flex:1; padding: 6px; min-width: 150px;"></select>
-                    <input type="text" id="newSubCategoryTitle" placeholder="اسم القسم الفرعي..." style="flex:1; padding: 6px; min-width: 150px;">
-                    <button class="btn-main" onclick="addSubCategory()">إضافة الفرعي</button>
-                </div>
-            </div>
-
-            <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px;">
-                <h4 style="font-size: 0.9rem; margin-bottom: 6px;">➕ اعتماد رقم مفوض جديد:</h4>
+            <div style="background: #f3f4f6; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; margin-bottom: 12px;">
+                <h4 style="font-size: 0.9rem; margin-bottom: 6px; color: #1f2937;">➕ اعتماد رقم مفوض جديد:</h4>
                 <div style="display: flex; gap: 8px;">
-                    <input type="tel" id="newAgentPhone" placeholder="05xxxxxxxx" style="flex: 1; padding: 6px;">
+                    <input type="tel" id="newAgentPhone" placeholder="05xxxxxxxx" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
                     <button class="btn-main" onclick="registerAgent()">اعتماد المفوض</button>
                 </div>
             </div>
             
             <div style="background: #f0fdf4; padding: 12px; border: 1px solid #bbf7d0; border-radius: 8px;">
-                <p><strong>📊 الإحصائيات العامة للمالك:</strong></p>
-                <p style="margin-top: 5px;">عدد تفاعلات العميل (النسخ والحجز): <span id="copyCounterCount" style="color:var(--primary-dark); font-weight:bold; font-size: 1.1rem;">0</span> مرة</p>
+                <p style="color: #166534;"><strong>📊 إحصائيات المالك:</strong> إجمالي طلبات الحجز والتوصيل ونسخ الأرقام من العميل: <span id="copyCounterCount" style="color:var(--primary-dark); font-weight:bold; font-size: 1.1rem;">0</span> مرة</p>
             </div>
         </div>
 
-        <!-- 💼 2. Agent Panel (لوحة المفوض - صلاحيات إضافة وحذف الفروع) -->
+        <!-- 💼 2. Agent Panel (لوحة التحكم الخاصة بالمفوض) -->
         <div id="agentPanel" class="panel-content">
-            <h3>💼 لوحة المفوض / المسوق</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">إضافة أقسام فرعية وتجار تابعين لك ومتابعتهم.</p>
+            <h3 style="color: #2563eb; margin-bottom: 5px;"><i class="fas fa-user-tie"></i> لوحة التحكم (المفوض) 💼</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">من هنا يمكنك إضافة وحذف الأقسام الفرعية، وتسجيل التجار الجدد في نطاقك.</p>
             
-            <!-- إضافة قسم فرعي من لوحة المفوض -->
-            <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px;">
-                <h4 style="font-size: 0.9rem; margin-bottom: 6px;">📂 إضافة قسم فرعي جديد:</h4>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <select id="agentMainCategorySelect" style="flex:1; padding: 6px; min-width: 150px;"></select>
-                    <input type="text" id="agentSubCategoryTitle" placeholder="اسم القسم الفرعي..." style="flex:1; padding: 6px; min-width: 150px;">
-                    <button class="btn-main" onclick="addSubCategoryByAgent()">إضافة القسم</button>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                <!-- إضافة قسم فرعي من لوحة المفوض -->
+                <div style="background: #eff6ff; padding: 12px; border: 1px solid #bfdbfe; border-radius: 8px;">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 6px; color: #1e40af;">📂 إضافة قسم فرعي جديد:</h4>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <select id="agentMainCategorySelect" style="flex:1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; min-width: 130px;"></select>
+                        <input type="text" id="agentSubCategoryTitle" placeholder="اسم القسم الفرعي..." style="flex:1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; min-width: 130px;">
+                        <button class="btn-main" onclick="addSubCategoryByAgent()">إضافة القسم</button>
+                    </div>
                 </div>
-            </div>
 
-            <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px;">
-                <h4 style="font-size: 0.95rem; margin-bottom: 8px;">➕ تسجيل تاجر جديد تحت إشرافك:</h4>
-                <div style="display: flex; gap: 8px;">
-                    <input type="tel" id="newMerchantPhone" placeholder="05xxxxxxxx" style="flex: 1; padding: 6px;">
-                    <button class="btn-main" onclick="registerMerchant()">تسجيل التاجر</button>
+                <!-- إضافة تاجر -->
+                <div style="background: #eff6ff; padding: 12px; border: 1px solid #bfdbfe; border-radius: 8px;">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 6px; color: #1e40af;">➕ تسجيل تاجر جديد تحت إشرافك:</h4>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="tel" id="newMerchantPhone" placeholder="05xxxxxxxx" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
+                        <button class="btn-main" onclick="registerMerchant()">تسجيل التاجر</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 🏪 3. Merchant Panel -->
+        <!-- 🏪 3. Merchant Panel (لوحة التاجر) -->
         <div id="merchantPanel" class="panel-content">
-            <h3>🏪 لوحة التحكم للتاجر</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">إضافة الخدمات، الصور، الأسعار، والوصف تفصيلياً.</p>
+            <h3 style="color: #d97706; margin-bottom: 5px;"><i class="fas fa-store"></i> لوحة التحكم (التاجر) 🏪</h3>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">إضافة الخدمات والمنتجات والعروض الخاصة بك مباشرة في المنصة.</p>
 
-            <div style="background: #f9fafb; padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px;">
-                <h4 style="margin-bottom: 10px; color: var(--primary-dark);">➕ إضافة منتج أو خدمة جديدة:</h4>
-                <div class="form-group">
-                    <label>اختر القسم الفرعي:</label>
-                    <select id="merchantSubSelect"></select>
+            <div style="background: #fffbeb; padding: 15px; border: 1px solid #fde68a; border-radius: 8px;">
+                <h4 style="margin-bottom: 10px; color: #92400e;">➕ إضافة منتج أو خدمة جديدة:</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                    <div class="form-group">
+                        <label>اختر القسم الفرعي:</label>
+                        <select id="merchantSubSelect"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>اسم المنتج / الخدمة:</label>
+                        <input type="text" id="pTitle" placeholder="مثال: صيانة مكيفات سبليت">
+                    </div>
+                    <div class="form-group">
+                        <label>المدينة / المنطقة:</label>
+                        <input type="text" id="pCity" placeholder="السعودية - جازان - أبو عريش">
+                    </div>
+                    <div class="form-group">
+                        <label>السعر (ريال):</label>
+                        <input type="number" id="pPrice" placeholder="150">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>اسم المنتج / الخدمة:</label>
-                    <input type="text" id="pTitle" placeholder="مثال: تركيب غرف نوم ديكور">
-                </div>
-                <div class="form-group">
-                    <label>المدينة / المنطقة:</label>
-                    <input type="text" id="pCity" placeholder="السعودية - جازان - أبو عريش">
-                </div>
-                <div class="form-group">
-                    <label>السعر (ريال):</label>
-                    <input type="number" id="pPrice" placeholder="250">
-                </div>
-                <div class="form-group">
-                    <label>وصف الخدمة / المنتج:</label>
-                    <textarea id="pDesc" rows="2" placeholder="أدخل الوصف التفصيلي وشروط الخدمة..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label>رابط صورة المنتج/الخدمة:</label>
+                    <label>رابط صورة المنتج/الخدمة (اختياري):</label>
                     <input type="url" id="pImg" placeholder="https://via.placeholder.com/150">
                 </div>
-                <button class="btn-main" onclick="addNewProductByMerchant()">نشر الخدمة في المنصة 🚀</button>
+                <button class="btn-main" style="width: 100%; margin-top: 5px;" onclick="addNewProductByMerchant()">نشر الخدمة في المنصة 🚀</button>
             </div>
         </div>
 
-        <!-- 🔍 Search & Filter Bar (تم فصل بحث المدينة عن الخدمة بالكامل) -->
+        <!-- 🔍 Search & Filter Bar (مفصل بشكل محدد ومستقل) -->
         <div class="search-filter-box">
             <input type="text" id="searchServiceInput" placeholder="🔍 ابحث باسم الخدمة..." onkeyup="filterServices()">
             <input type="text" id="searchCityInput" placeholder="📍 ابحث باسم المدينة أو المنطقة..." onkeyup="filterServices()">
@@ -213,20 +217,19 @@
                 <option value="low">السعر: الأقل إلى الأعلى</option>
                 <option value="high">السعر: الأعلى إلى الأقل</option>
             </select>
-            <select id="ratingFilter" onchange="filterServices()">
-                <option value="all">الجودة والتقييم</option>
-                <option value="5">⭐⭐⭐⭐⭐ 5 نجوم</option>
-                <option value="4">⭐⭐⭐⭐ 4 نجوم وأعلى</option>
-            </select>
         </div>
 
-        <!-- Public Services List (شاشة العميل - المجلدات الـ 8 المكتملة) -->
-        <h3 style="margin-bottom: 15px; color: var(--secondary);"><i class="fas fa-th-list"></i> جميع المجلدات والأقسام الفرعية</h3>
+        <!-- Public Services List (عرض البيانات بالكامل مع الصلاحيات) -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="color: var(--secondary);"><i class="fas fa-th-list"></i> جميع المجلدات والأقسام الفرعية</h3>
+            <span id="roleNotice" style="font-size: 0.85rem; font-weight: bold; padding: 4px 10px; border-radius: 6px; background: #e5e7eb; color: #374151;">معاينة: واجهة العميل</span>
+        </div>
+
         <div id="categoriesContainer"></div>
 
     </div>
 
-    <!-- Modal OTP Login (تم إخفاء الأرقام الافتراضية) -->
+    <!-- Modal OTP Login -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <h3 style="margin-bottom: 15px;"><i class="fas fa-user-shield"></i> تسجيل دخول الشركاء والمالك</h3>
@@ -348,23 +351,40 @@
             }
         ];
 
-        // 🟢 معاينة النسخة التجريبية والتغيير بين الأدوار
+        // 🟢 التبديل التفاعلي والمباشر بين الواجهات مع التأكيد البصري
         function switchView(role) {
             currentRole = role;
+            
+            // تحديث تمييز أزرار الشريطة
+            document.querySelectorAll('.demo-switcher button').forEach(btn => btn.classList.remove('active-role'));
             document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active'));
             document.getElementById('sessionBar').style.display = 'flex';
 
+            const notice = document.getElementById('roleNotice');
+
             if(role === 'owner') {
+                document.getElementById('btnRoleOwner').classList.add('active-role');
                 document.getElementById('sessionRole').innerText = "المالك 👑";
                 document.getElementById('ownerPanel').classList.add('active');
+                notice.innerText = "معاينة واجهة الإدارة: المالك 👑 (تظهر صلاحيات الحذف والإضافة بالكامل)";
+                notice.style.background = "#f3e8ff"; notice.style.color = "#6b21a8";
             } else if(role === 'agent') {
+                document.getElementById('btnRoleAgent').classList.add('active-role');
                 document.getElementById('sessionRole').innerText = "المفوض 💼";
                 document.getElementById('agentPanel').classList.add('active');
+                notice.innerText = "معاينة واجهة الإدارة: المفوض 💼 (تظهر صلاحيات حذف وإضافة الأقسام الفرعية)";
+                notice.style.background = "#dbeafe"; notice.style.color = "#1e40af";
             } else if(role === 'merchant') {
+                document.getElementById('btnRoleMerchant').classList.add('active-role');
                 document.getElementById('sessionRole').innerText = "التاجر 🏪";
                 document.getElementById('merchantPanel').classList.add('active');
+                notice.innerText = "معاينة واجهة التاجر 🏪 (إضافة وحذف منتجاته الخاصة)";
+                notice.style.background = "#fef3c7"; notice.style.color = "#92400e";
             } else {
+                document.getElementById('btnRoleClient').classList.add('active-role');
                 document.getElementById('sessionRole').innerText = "عميل / زائر 📱";
+                notice.innerText = "معاينة واجهة العميل 📱 (تظهر أزرار: نسخ الرقم، طلب توصيل، وحجز)";
+                notice.style.background = "#e5e7eb"; notice.style.color = "#374151";
             }
             renderCategories();
         }
@@ -383,7 +403,7 @@
                 agentSel.innerHTML += `<option value="${idx}">${cat.title}</option>`;
 
                 cat.subs.forEach(sub => {
-                    merchantSubSel.innerHTML += `<option value="${idx}">${cat.title} -> ${sub.name}</option>`;
+                    merchantSubSel.innerHTML += `<option value="${idx}">${cat.title} ➔ ${sub.name}</option>`;
                 });
             });
         }
@@ -401,14 +421,14 @@
 
                 let catHTML = `
                     <div class="category-card">
-                        <div class="category-header" onclick="toggleCategory(${catIndex})">
+                        <div class="category-header">
                             <div class="category-title">
-                                <i class="fas fa-folder"></i> ${cat.title}
-                                ${currentRole === 'owner' ? `<button class="btn-danger" style="padding: 2px 6px; font-size: 0.7rem; margin-right: 10px;" onclick="event.stopPropagation(); deleteMainCategory(${catIndex})">حذف المجلد 🗑️</button>` : ''}
+                                <i class="fas fa-folder" style="color: var(--primary);"></i> ${cat.title}
+                                ${currentRole === 'owner' ? `<button class="btn-danger" style="padding: 3px 8px; font-size: 0.75rem; margin-right: 15px;" onclick="deleteMainCategory(${catIndex})"><i class="fas fa-trash"></i> حذف المجلد الرئيسي بالكامل</button>` : ''}
                             </div>
                             <span class="badge">📊 ${totalServicesCount} خدمة متوفرة</span>
                         </div>
-                        <div class="subcategories" id="sub-${catIndex}">
+                        <div class="subcategories">
                 `;
 
                 cat.subs.forEach((sub, subIndex) => {
@@ -416,12 +436,11 @@
                         <div class="subcategory-block">
                             <div class="subcategory-header">
                                 <span>📂 ${sub.name} (${sub.services.length})</span>
-                                ${(currentRole === 'owner' || currentRole === 'agent') ? `<button class="btn-danger" style="padding: 2px 6px; font-size: 0.7rem;" onclick="deleteSubCategory(${catIndex}, ${subIndex})">حذف الفرع 🗑️</button>` : ''}
+                                ${(currentRole === 'owner' || currentRole === 'agent') ? `<button class="btn-danger" style="padding: 2px 8px; font-size: 0.75rem;" onclick="deleteSubCategory(${catIndex}, ${subIndex})"><i class="fas fa-trash"></i> حذف الفرع</button>` : ''}
                             </div>
                     `;
 
                     sub.services.forEach((service, serviceIndex) => {
-                        // فلترة الخدمة والمدينة بشكل منفصل
                         const matchesService = service.title.toLowerCase().includes(serviceQuery);
                         const matchesCity = service.city.toLowerCase().includes(cityQuery);
 
@@ -433,13 +452,19 @@
                                         <strong>🔹 ${service.title}</strong>
                                         <span class="price-tag">${service.price} ريال</span>
                                         <span class="merchant-location"><i class="fas fa-map-marker-alt"></i> ${service.city}</span>
-                                        <span class="rating"><i class="fas fa-star"></i> ${service.rating}.0 (تقييم ممتاز)</span>
                                     </div>
                                     <div class="action-btns">
-                                        ${currentRole === 'merchant' || currentRole === 'owner' ? `<button class="btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="deleteService(${catIndex}, ${subIndex}, ${serviceIndex})">حذف الخدمة 🗑️</button>` : ''}
-                                        <button class="btn-main" style="padding: 4px 8px; font-size: 0.75rem;" onclick="copyPhone()">نسخ الرقم 📞</button>
-                                        <button class="btn-delivery" style="padding: 4px 8px; font-size: 0.75rem;" onclick="openBookingWithDelivery('delivery')">طلب توصيل 🚚</button>
-                                        <button class="btn-main" style="padding: 4px 8px; font-size: 0.75rem; background:#3b82f6;" onclick="openBookingWithDelivery('booking')">حجز 📅</button>
+                                        <!-- 📱 أزرار تظهر حصرياً للعميل فقط -->
+                                        ${currentRole === 'client' ? `
+                                            <button class="btn-main" style="padding: 6px 10px; font-size: 0.8rem;" onclick="copyPhone()">نسخ الرقم 📞</button>
+                                            <button class="btn-delivery" style="padding: 6px 10px; font-size: 0.8rem;" onclick="openBookingWithDelivery('delivery')">طلب توصيل 🚚</button>
+                                            <button class="btn-main" style="padding: 6px 10px; font-size: 0.8rem; background:#3b82f6;" onclick="openBookingWithDelivery('booking')">حجز 📅</button>
+                                        ` : ''}
+
+                                        <!-- 🛠️ أزرار الإدارة والتاجر -->
+                                        ${(currentRole === 'merchant' || currentRole === 'owner') ? `
+                                            <button class="btn-danger" style="padding: 5px 10px; font-size: 0.8rem;" onclick="deleteService(${catIndex}, ${subIndex}, ${serviceIndex})"><i class="fas fa-trash"></i> حذف الخدمة</button>
+                                        ` : ''}
                                     </div>
                                 </div>
                             `;
@@ -454,7 +479,7 @@
             });
         }
 
-        /* 🛠️ وظائف الإضافة والحذف للمالك والمفوض */
+        /* 🛠️ وظائف الإضافة والحذف الصريحة للمالك والمفوض */
         function addMainCategory() {
             const title = document.getElementById('newMainCategoryTitle').value.trim();
             if(title) {
@@ -462,11 +487,11 @@
                 document.getElementById('newMainCategoryTitle').value = '';
                 renderCategories();
                 alert("تم إضافة المجلد الرئيسي بنجاح!");
-            }
+            } else { alert("يرجى كتابة اسم المجلد الرئيسي"); }
         }
 
         function deleteMainCategory(catIndex) {
-            if(confirm("هل أنت تأكد من حذف هذا المجلد الرئيسي بكافة أقسامه؟")) {
+            if(confirm(`⚠️ هل أنت تأكد من حذف المجلد الرئيسي "${data[catIndex].title}" بكافة أقسامه وخدماته؟`)) {
                 data.splice(catIndex, 1);
                 renderCategories();
             }
@@ -475,27 +500,27 @@
         function addSubCategory() {
             const catIndex = document.getElementById('targetMainCategorySelect').value;
             const subTitle = document.getElementById('newSubCategoryTitle').value.trim();
-            if(subTitle) {
+            if(subTitle && data[catIndex]) {
                 data[catIndex].subs.push({ name: subTitle, services: [] });
                 document.getElementById('newSubCategoryTitle').value = '';
                 renderCategories();
                 alert("تم إضافة القسم الفرعي بنجاح!");
-            }
+            } else { alert("يرجى كتابة اسم القسم الفرعي"); }
         }
 
         function addSubCategoryByAgent() {
             const catIndex = document.getElementById('agentMainCategorySelect').value;
             const subTitle = document.getElementById('agentSubCategoryTitle').value.trim();
-            if(subTitle) {
+            if(subTitle && data[catIndex]) {
                 data[catIndex].subs.push({ name: subTitle, services: [] });
                 document.getElementById('agentSubCategoryTitle').value = '';
                 renderCategories();
                 alert("تم إضافة القسم الفرعي بنجاح بواسطة المفوض!");
-            }
+            } else { alert("يرجى كتابة اسم القسم الفرعي"); }
         }
 
         function deleteSubCategory(catIndex, subIndex) {
-            if(confirm("هل أنت تأكد من حذف هذا القسم الفرعي؟")) {
+            if(confirm(`⚠️ هل أنت تأكد من حذف هذا القسم الفرعي "${data[catIndex].subs[subIndex].name}"؟`)) {
                 data[catIndex].subs.splice(subIndex, 1);
                 renderCategories();
             }
@@ -522,14 +547,14 @@
             const price = document.getElementById('pPrice').value;
             const img = document.getElementById('pImg').value || "https://via.placeholder.com/150";
 
-            if(title && price && data[catIndex].subs.length > 0) {
+            if(title && price && data[catIndex] && data[catIndex].subs.length > 0) {
                 data[catIndex].subs[0].services.push({ title: title, price: Number(price), city: city, rating: 5, img: img });
                 renderCategories();
-                alert("تم إدراج الخدمة بنجاح وتحديث المنصة!");
+                alert("تم إدراج الخدمة بنجاح في المنصة!");
                 document.getElementById('pTitle').value = '';
                 document.getElementById('pPrice').value = '';
             } else {
-                alert("يرجى تعبئة الحقول والتأكد من وجود قسم فرعي!");
+                alert("يرجى تعبئة الحقول والتأكد من وجود قسم فرعي متاح!");
             }
         }
 
@@ -565,11 +590,6 @@
 
         function logout() { switchView('client'); }
 
-        function toggleCategory(index) {
-            const el = document.getElementById(`sub-${index}`);
-            el.style.display = el.style.display === 'block' ? 'none' : 'block';
-        }
-
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
@@ -581,11 +601,14 @@
 
         function submitBooking(e) {
             e.preventDefault();
+            copyCounter++;
+            document.getElementById('copyCounterCount').innerText = copyCounter;
             alert("تم إرسال الطلب بنجاح!");
             closeModal('bookingModal');
         }
 
-        renderCategories();
+        // تشغيل النمط العادي افتراضياً
+        switchView('client');
     </script>
 </body>
 </html>
