@@ -28,6 +28,11 @@
 
         .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
 
+        /* Demo View Switcher Bar */
+        .demo-switcher { background: #3b82f6; color: white; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
+        .demo-switcher button { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; }
+        .demo-switcher button:hover { background: white; color: #3b82f6; }
+
         /* Control Panels Area */
         .panel-content { display: none; background: var(--white); padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow); border-top: 4px solid var(--primary); }
         .panel-content.active { display: block; }
@@ -41,9 +46,9 @@
         .btn-secondary { background: #6b7280; color: var(--white); }
         .btn-delivery { background: #f59e0b; color: var(--white); }
 
-        /* Search & Filter Bar */
+        /* Search & Filter Bar (تم الفصل بين الخدمة والمدينة) */
         .search-filter-box { background: var(--white); padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow); display: flex; gap: 10px; flex-wrap: wrap; }
-        .search-filter-box input, .search-filter-box select { flex: 1; min-width: 160px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+        .search-filter-box input, .search-filter-box select { flex: 1; min-width: 150px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
 
         /* Categories Layout */
         .category-card { background: var(--white); border-radius: 10px; margin-bottom: 15px; box-shadow: var(--shadow); overflow: hidden; }
@@ -53,7 +58,7 @@
 
         .subcategories { display: none; padding: 15px; background: #fafafa; }
         .subcategory-block { background: var(--white); border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
-        .subcategory-header { font-weight: bold; font-size: 1rem; margin-bottom: 10px; color: var(--primary-dark); border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
+        .subcategory-header { font-weight: bold; font-size: 1rem; margin-bottom: 10px; color: var(--primary-dark); border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
 
         .service-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed #e5e7eb; flex-wrap: wrap; gap: 10px; }
         .service-item:last-child { border-bottom: none; }
@@ -71,15 +76,13 @@
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: bold; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
-        
-        .quick-login-hints { background: #f0fdf4; border: 1px dashed var(--primary); padding: 10px; border-radius: 6px; margin-bottom: 12px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
     <!-- Header & Logo -->
     <header>
-        <button class="login-btn-header" id="authBtn" onclick="openModal('loginModal')"><i class="fas fa-lock"></i> دخول الشركاء / المالك</button>
+        <button class="login-btn-header" id="authBtn" onclick="openModal('loginModal')"><i class="fas fa-lock"></i> دخول الشركاء والمالك</button>
         <div class="logo-container">
             <div class="logo-box">BEST</div>
             <h1 style="font-size: 1.5rem;">منصة الخدمات الشاملة</h1>
@@ -89,19 +92,47 @@
 
     <div class="container">
 
-        <!-- Active User Session Bar -->
-        <div class="user-session-bar" id="sessionBar">
-            <div><i class="fas fa-user-circle"></i> مرحباً بك: <strong id="sessionRole">--</strong> (<span id="sessionPhone">--</span>)</div>
-            <button class="btn-danger" style="padding: 4px 10px; font-size: 0.8rem;" onclick="logout()">تسجيل خروج</button>
+        <!-- 🎭 شريط النسخة التجريبية للعرض للشركاء والعميل -->
+        <div class="demo-switcher">
+            <span><strong>👁️ معاينة العرض التجريبي:</strong></span>
+            <button onclick="switchView('client')">📱 واجهة العميل</button>
+            <button onclick="switchView('merchant')">🏪 واجهة التاجر</button>
+            <button onclick="switchView('agent')">💼 واجهة المفوض</button>
+            <button onclick="switchView('owner')">👑 واجهة المالك</button>
         </div>
 
-        <!-- 👑 1. Owner Panel (لوحة المالك) -->
+        <!-- Active User Session Bar -->
+        <div class="user-session-bar" id="sessionBar">
+            <div><i class="fas fa-user-circle"></i> الوضع الحالي: <strong id="sessionRole">عميل / زائر</strong> (<span id="sessionPhone">عام</span>)</div>
+            <button class="btn-danger" style="padding: 4px 10px; font-size: 0.8rem;" onclick="logout()">إنهاء المعاينة</button>
+        </div>
+
+        <!-- 👑 1. Owner Panel (إدارة كاملة + حذف وإضافة الأقسام والمجلدات) -->
         <div id="ownerPanel" class="panel-content">
             <h3 style="color: #8b5cf6;"><i class="fas fa-crown"></i> لوحة التحكم للمالك 👑</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">تسجيل المفوضين وإدارة كافة صلاحيات المنصة.</p>
-            
-            <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px;">
-                <h4 style="font-size: 0.95rem; margin-bottom: 8px;">➕ إضافة رقم مفوض جديد:</h4>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">إدارة المجلدات، الأقسام الفرعية، المفوضين، والإحصائيات.</p>
+
+            <!-- إضافة مجلد رئيسي جديد -->
+            <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px;">
+                <h4 style="font-size: 0.9rem; margin-bottom: 6px;">📁 إضافة مجلد رئيسي جديد:</h4>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="newMainCategoryTitle" placeholder="اسم المجلد الرئيسي..." style="flex:1; padding: 6px;">
+                    <button class="btn-main" onclick="addMainCategory()">إضافة المجلد</button>
+                </div>
+            </div>
+
+            <!-- إضافة قسم فرعي جديد -->
+            <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px;">
+                <h4 style="font-size: 0.9rem; margin-bottom: 6px;">📂 إضافة قسم فرعي داخل مجلد:</h4>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <select id="targetMainCategorySelect" style="flex:1; padding: 6px; min-width: 150px;"></select>
+                    <input type="text" id="newSubCategoryTitle" placeholder="اسم القسم الفرعي..." style="flex:1; padding: 6px; min-width: 150px;">
+                    <button class="btn-main" onclick="addSubCategory()">إضافة الفرعي</button>
+                </div>
+            </div>
+
+            <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px;">
+                <h4 style="font-size: 0.9rem; margin-bottom: 6px;">➕ اعتماد رقم مفوض جديد:</h4>
                 <div style="display: flex; gap: 8px;">
                     <input type="tel" id="newAgentPhone" placeholder="05xxxxxxxx" style="flex: 1; padding: 6px;">
                     <button class="btn-main" onclick="registerAgent()">اعتماد المفوض</button>
@@ -114,12 +145,23 @@
             </div>
         </div>
 
-        <!-- 💼 2. Agent Panel -->
+        <!-- 💼 2. Agent Panel (لوحة المفوض - صلاحيات إضافة وحذف الفروع) -->
         <div id="agentPanel" class="panel-content">
             <h3>💼 لوحة المفوض / المسوق</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">إضافة التجار التابعين لك ومتابعة أدائهم.</p>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">إضافة أقسام فرعية وتجار تابعين لك ومتابعتهم.</p>
+            
+            <!-- إضافة قسم فرعي من لوحة المفوض -->
+            <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 12px;">
+                <h4 style="font-size: 0.9rem; margin-bottom: 6px;">📂 إضافة قسم فرعي جديد:</h4>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <select id="agentMainCategorySelect" style="flex:1; padding: 6px; min-width: 150px;"></select>
+                    <input type="text" id="agentSubCategoryTitle" placeholder="اسم القسم الفرعي..." style="flex:1; padding: 6px; min-width: 150px;">
+                    <button class="btn-main" onclick="addSubCategoryByAgent()">إضافة القسم</button>
+                </div>
+            </div>
+
             <div style="background: #f9fafb; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px;">
-                <h4 style="font-size: 0.95rem; margin-bottom: 8px;">➕ إضافة رقم تاجر جديد تحت إشرافك:</h4>
+                <h4 style="font-size: 0.95rem; margin-bottom: 8px;">➕ تسجيل تاجر جديد تحت إشرافك:</h4>
                 <div style="display: flex; gap: 8px;">
                     <input type="tel" id="newMerchantPhone" placeholder="05xxxxxxxx" style="flex: 1; padding: 6px;">
                     <button class="btn-main" onclick="registerMerchant()">تسجيل التاجر</button>
@@ -135,8 +177,16 @@
             <div style="background: #f9fafb; padding: 15px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px;">
                 <h4 style="margin-bottom: 10px; color: var(--primary-dark);">➕ إضافة منتج أو خدمة جديدة:</h4>
                 <div class="form-group">
+                    <label>اختر القسم الفرعي:</label>
+                    <select id="merchantSubSelect"></select>
+                </div>
+                <div class="form-group">
                     <label>اسم المنتج / الخدمة:</label>
                     <input type="text" id="pTitle" placeholder="مثال: تركيب غرف نوم ديكور">
+                </div>
+                <div class="form-group">
+                    <label>المدينة / المنطقة:</label>
+                    <input type="text" id="pCity" placeholder="السعودية - جازان - أبو عريش">
                 </div>
                 <div class="form-group">
                     <label>السعر (ريال):</label>
@@ -154,9 +204,10 @@
             </div>
         </div>
 
-        <!-- Search & Filter Bar (شاشة العميل) -->
+        <!-- 🔍 Search & Filter Bar (تم فصل بحث المدينة عن الخدمة بالكامل) -->
         <div class="search-filter-box">
-            <input type="text" id="searchInput" placeholder="🔍 ابحث باسم الخدمة أو المدينة..." onkeyup="filterServices()">
+            <input type="text" id="searchServiceInput" placeholder="🔍 ابحث باسم الخدمة..." onkeyup="filterServices()">
+            <input type="text" id="searchCityInput" placeholder="📍 ابحث باسم المدينة أو المنطقة..." onkeyup="filterServices()">
             <select id="priceFilter" onchange="filterServices()">
                 <option value="all">ترتيب حسب السعر</option>
                 <option value="low">السعر: الأقل إلى الأعلى</option>
@@ -175,30 +226,22 @@
 
     </div>
 
-    <!-- Modal OTP Login -->
+    <!-- Modal OTP Login (تم إخفاء الأرقام الافتراضية) -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 10px;"><i class="fas fa-user-shield"></i> تسجيل دخول الشركاء والمالك</h3>
-            
-            <div class="quick-login-hints">
-                <strong>💡 للتجربة السريعة:</strong><br>
-                • جوال المالك: <code>0500000000</code><br>
-                • جوال المفوض: <code>0511111111</code><br>
-                • جوال التاجر: <code>0522222222</code><br>
-                • رمز الـ OTP التجريبي: <code>1234</code>
-            </div>
+            <h3 style="margin-bottom: 15px;"><i class="fas fa-user-shield"></i> تسجيل دخول الشركاء والمالك</h3>
 
             <div id="stepPhone">
                 <div class="form-group">
-                    <label>رقم الجوال:</label>
-                    <input type="tel" id="inputPhone" placeholder="0500000000">
+                    <label>رقم الجوال المسجل:</label>
+                    <input type="tel" id="inputPhone" placeholder="05xxxxxxxx">
                 </div>
                 <button class="btn-main" style="width: 100%;" onclick="sendOTP()">إرسال رمز التحقق OTP</button>
             </div>
             <div id="stepOTP" style="display: none;">
                 <div class="form-group">
-                    <label>رمز OTP:</label>
-                    <input type="text" id="inputOTP" placeholder="1234" style="text-align: center; letter-spacing: 5px; font-weight: bold;">
+                    <label>رمز التحقق (OTP):</label>
+                    <input type="text" id="inputOTP" placeholder="****" style="text-align: center; letter-spacing: 5px; font-weight: bold;">
                 </div>
                 <button class="btn-main" style="width: 100%;" onclick="verifyOTP()">تأكيد الدخول</button>
             </div>
@@ -227,7 +270,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>العنوان / رابط الموقع (Google Maps):</label>
+                    <label>العنوان / المدينة / رابط الموقع:</label>
                     <input type="text" placeholder="السعودية - جازان - أبو عريش...">
                 </div>
                 <button type="submit" class="btn-main" style="width: 100%;">تأكيد وإرسال الطلب</button>
@@ -245,109 +288,162 @@
 
         let tempPhone = "";
         let copyCounter = 0;
+        let currentRole = "client"; // client, merchant, agent, owner
 
-        // 🗂️ البيانات الكاملة المعتمدة 100% (8 مجلدات رئيسية + جميع الفروع + الصور والأسعار)
+        // 🗂️ البيانات الكاملة المعتمدة 100% (8 مجلدات رئيسية)
         let data = [
             {
                 title: "1. خدمات الأعمال والتقنية",
                 subs: [
-                    { name: "التقنية والبرمجة", services: [{ title: "تصميم وإنشاء مواقع وتطبيقات", price: 1500, rating: 5, img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=150" }, { title: "صيانة شبكات وكاميرات مراقبة", price: 300, rating: 5, img: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=150" }, { title: "صيانة جوالات وحاسب آلي", price: 100, rating: 4, img: "https://images.unsplash.com/photo-1597740985671-2a8a3b80502e?w=150" }] },
-                    { name: "التسويق والتصميم", services: [{ title: "إدارة حسابات التواصل الاجتماعي", price: 800, rating: 5, img: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=150" }, { title: "تصميم شعارات وهويات بصرية", price: 400, rating: 5, img: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=150" }] },
-                    { name: "خدمات حكومية وإدارية", services: [{ title: "تعقيب معاملات وشؤون تجارية", price: 200, rating: 5, img: "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=150" }, { title: "استشارات قانونية ومحاسبية", price: 350, rating: 5, img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=150" }] }
+                    { name: "التقنية والبرمجة", services: [{ title: "تصميم وإنشاء مواقع وتطبيقات", price: 1500, city: "جازان - أبو عريش", rating: 5, img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=150" }, { title: "صيانة شبكات وكاميرات مراقبة", price: 300, city: "الرياض", rating: 5, img: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=150" }] },
+                    { name: "التسويق والتصميم", services: [{ title: "إدارة حسابات التواصل الاجتماعي", price: 800, city: "جدة", rating: 5, img: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=150" }] },
+                    { name: "خدمات حكومية وإدارية", services: [{ title: "تعقيب معاملات وشؤون تجارية", price: 200, city: "جازان", rating: 5, img: "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=150" }] }
                 ]
             },
             {
                 title: "2. المقاولات والبناء",
                 subs: [
-                    { name: "البناء والتأسيس", services: [{ title: "المقاولات العامة والمباني (عظم / مفتاح)", price: 50000, rating: 5, img: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?w=150" }, { title: "أعمال الحفر والردم والتأسيس", price: 5000, rating: 4, img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=150" }] },
-                    { name: "التشطيبات والديكور", services: [{ title: "دهانات وورق جدران وديكورات فوم", price: 1200, rating: 5, img: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=150" }, { title: "تركيب سيراميك ورخام وباركيه", price: 2000, rating: 5, img: "https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?w=150" }, { title: "أعمال جبس بورد وأسقف مستعارة", price: 1500, rating: 4, img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=150" }] },
-                    { name: "الترميم والصيانة المعمارية", services: [{ title: "ترميم وتجديد المنازل والمباني", price: 8000, rating: 5, img: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=150" }, { title: "عزل اسطح وخزانات (مائي وحراري)", price: 1800, rating: 5, img: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=150" }] }
+                    { name: "البناء والتأسيس", services: [{ title: "المقاولات العامة والمباني (عظم / مفتاح)", price: 50000, city: "جازان - صبيا", rating: 5, img: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?w=150" }] },
+                    { name: "التشطيبات والديكور", services: [{ title: "دهانات وورق جدران وديكورات فوم", price: 1200, city: "أبو عريش", rating: 5, img: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=150" }] },
+                    { name: "الترميم والصيانة المعمارية", services: [{ title: "ترميم وتجديد المنازل والمباني", price: 8000, city: "الدمام", rating: 5, img: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=150" }] }
                 ]
             },
             {
                 title: "3. العقارات",
                 subs: [
-                    { name: "بيع العقارات", services: [{ title: "بيع اراضي ومخططات سكنية", price: 120000, rating: 5, img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=150" }, { title: "بيع فلل وشقق سكنية", price: 650000, rating: 5, img: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=150" }] },
-                    { name: "إيجار العقارات", services: [{ title: "شقق وفلل للإيجار (سنوي / شهري)", price: 2000, rating: 5, img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=150" }, { title: "محلات ومكاتب ومستودعات للإيجار", price: 3500, rating: 4, img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=150" }] },
-                    { name: "إدارة واستثمار العقار", services: [{ title: "إدارة أملاك وصيانة عقارات", price: 1000, rating: 5, img: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=150" }] }
+                    { name: "بيع العقارات", services: [{ title: "بيع اراضي ومخططات سكنية", price: 120000, city: "جازان", rating: 5, img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=150" }] },
+                    { name: "إيجار العقارات", services: [{ title: "شقق وفلل للإيجار (سنوي / شهري)", price: 2000, city: "أبو عريش", rating: 5, img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=150" }] }
                 ]
             },
             {
                 title: "4. البيع والشراء - حراج وشامل",
                 subs: [
-                    { name: "بيع وشراء السيارات والمركبات", services: [{ title: "سيارات جديدة ومستعملة للبيع", price: 45000, rating: 5, img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=150" }, { title: "قطع غيار وتشاليح ومعدات", price: 500, rating: 4, img: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=150" }] },
-                    { name: "الأجهزة والإلكترونيات", services: [{ title: "جوالات وأجهزة ذكية جديدة ومستعملة", price: 2500, rating: 5, img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150" }, { title: "أجهزة منزلية وكهربائية", price: 800, rating: 4, img: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=150" }] },
-                    { name: "الأثاث والمستلزمات", services: [{ title: "أثاث منزلي ومكتبي للبيع", price: 1500, rating: 5, img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=150" }] }
+                    { name: "بيع وشراء السيارات والمركبات", services: [{ title: "سيارات جديدة ومستعملة للبيع", price: 45000, city: "جازان", rating: 5, img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=150" }] },
+                    { name: "الأجهزة والإلكترونيات", services: [{ title: "جوالات وأجهزة ذكية جديدة ومستعملة", price: 2500, city: "أبو عريش", rating: 5, img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150" }] }
                 ]
             },
             {
                 title: "5. المواد الغذائية والمطاعم",
                 subs: [
-                    { name: "المطاعم والمأكولات", services: [{ title: "وجبات سريعة وشواء ومطابخ", price: 35, rating: 5, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150" }] },
-                    { name: "المقاهي والحلا", services: [{ title: "كافيهات وحلويات شرقية وغربية", price: 25, rating: 5, img: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=150" }] },
-                    { name: "المواد الغذائية والتموينات", services: [{ title: "خضار وفواكه طازجة ولحوم وتوزيع مياه", price: 60, rating: 5, img: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=150" }] }
+                    { name: "المطاعم والمأكولات", services: [{ title: "وجبات سريعة وشواء ومطابخ", price: 35, city: "أبو عريش", rating: 5, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150" }] }
                 ]
             },
             {
                 title: "6. الصحة والمراكز الطبية",
                 subs: [
-                    { name: "المستشفيات والمراكز التخصصية", services: [{ title: "مستشفيات ومجمعات طبية عامة", price: 200, rating: 5, img: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=150" }] },
-                    { name: "العيادات التخصصية", services: [{ title: "عيادات أسنان وجلدية وليزر وتجميل", price: 150, rating: 5, img: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=150" }] },
-                    { name: "الخدمات الطبية المساندة", services: [{ title: "صيدليات ورعاية صحية منزلية", price: 100, rating: 4, img: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=150" }] }
+                    { name: "المستشفيات والمراكز التخصصية", services: [{ title: "مستشفيات ومجمعات طبية عامة", price: 200, city: "جازان", rating: 5, img: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=150" }] }
                 ]
             },
             {
                 title: "7. الخدمات المنزلية والصيانة",
                 subs: [
-                    { name: "صيانة وإصلاح", services: [{ title: "صيانة وتنظيف مكيفات سبليت وشباك", price: 100, rating: 5, img: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=150" }, { title: "سباكة وتأسيس شبكات مياه وكهرباء", price: 150, rating: 5, img: "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=150" }] },
-                    { name: "نظافة وتعقيم", services: [{ title: "تنظيف منازل ومكافحة حشرات", price: 300, rating: 4, img: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=150" }] }
+                    { name: "صيانة وإصلاح", services: [{ title: "صيانة وتنظيف مكيفات سبليت وشباك", price: 100, city: "أبو عريش", rating: 5, img: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=150" }] }
                 ]
             },
             {
                 title: "8. خدمات السيارات والنقل",
                 subs: [
-                    { name: "صيانة ورش السيارات", services: [{ title: "ميكانيكا وفحص كمبيوتر وتغيير زيوت", price: 80, rating: 5, img: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=150" }] },
-                    { name: "النقل واللوجستيات", services: [{ title: "سطحات نقل سيارات ونقل عفش وتغليف", price: 120, rating: 5, img: "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=150" }] }
+                    { name: "صيانة ورش السيارات", services: [{ title: "ميكانيكا وفحص كمبيوتر وتغيير زيوت", price: 80, city: "جازان", rating: 5, img: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=150" }] }
                 ]
             }
         ];
 
+        // 🟢 معاينة النسخة التجريبية والتغيير بين الأدوار
+        function switchView(role) {
+            currentRole = role;
+            document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active'));
+            document.getElementById('sessionBar').style.display = 'flex';
+
+            if(role === 'owner') {
+                document.getElementById('sessionRole').innerText = "المالك 👑";
+                document.getElementById('ownerPanel').classList.add('active');
+            } else if(role === 'agent') {
+                document.getElementById('sessionRole').innerText = "المفوض 💼";
+                document.getElementById('agentPanel').classList.add('active');
+            } else if(role === 'merchant') {
+                document.getElementById('sessionRole').innerText = "التاجر 🏪";
+                document.getElementById('merchantPanel').classList.add('active');
+            } else {
+                document.getElementById('sessionRole').innerText = "عميل / زائر 📱";
+            }
+            renderCategories();
+        }
+
+        function populateSelects() {
+            const ownerSel = document.getElementById('targetMainCategorySelect');
+            const agentSel = document.getElementById('agentMainCategorySelect');
+            const merchantSubSel = document.getElementById('merchantSubSelect');
+            
+            ownerSel.innerHTML = '';
+            agentSel.innerHTML = '';
+            merchantSubSel.innerHTML = '';
+
+            data.forEach((cat, idx) => {
+                ownerSel.innerHTML += `<option value="${idx}">${cat.title}</option>`;
+                agentSel.innerHTML += `<option value="${idx}">${cat.title}</option>`;
+
+                cat.subs.forEach(sub => {
+                    merchantSubSel.innerHTML += `<option value="${idx}">${cat.title} -> ${sub.name}</option>`;
+                });
+            });
+        }
+
         function renderCategories() {
+            populateSelects();
             const container = document.getElementById('categoriesContainer');
             container.innerHTML = '';
 
-            data.forEach((cat, index) => {
+            const serviceQuery = document.getElementById('searchServiceInput').value.toLowerCase();
+            const cityQuery = document.getElementById('searchCityInput').value.toLowerCase();
+
+            data.forEach((cat, catIndex) => {
                 let totalServicesCount = cat.subs.reduce((total, sub) => total + sub.services.length, 0);
 
                 let catHTML = `
                     <div class="category-card">
-                        <div class="category-header" onclick="toggleCategory(${index})">
-                            <div class="category-title"><i class="fas fa-folder"></i> ${cat.title}</div>
+                        <div class="category-header" onclick="toggleCategory(${catIndex})">
+                            <div class="category-title">
+                                <i class="fas fa-folder"></i> ${cat.title}
+                                ${currentRole === 'owner' ? `<button class="btn-danger" style="padding: 2px 6px; font-size: 0.7rem; margin-right: 10px;" onclick="event.stopPropagation(); deleteMainCategory(${catIndex})">حذف المجلد 🗑️</button>` : ''}
+                            </div>
                             <span class="badge">📊 ${totalServicesCount} خدمة متوفرة</span>
                         </div>
-                        <div class="subcategories" id="sub-${index}">
+                        <div class="subcategories" id="sub-${catIndex}">
                 `;
 
-                cat.subs.forEach((sub) => {
-                    catHTML += `<div class="subcategory-block"><div class="subcategory-header">📂 ${sub.name} (${sub.services.length})</div>`;
-                    
-                    sub.services.forEach((service) => {
-                        catHTML += `
-                            <div class="service-item">
-                                <img src="${service.img}" class="service-img" alt="صورة الخدمة">
-                                <div class="service-info">
-                                    <strong>🔹 ${service.title}</strong>
-                                    <span class="price-tag">${service.price} ريال</span>
-                                    <span class="merchant-location"><i class="fas fa-map-marker-alt"></i> السعودية - جازان - أبو عريش</span>
-                                    <span class="rating"><i class="fas fa-star"></i> ${service.rating}.0 (تقييم ممتاز)</span>
-                                </div>
-                                <div class="action-btns">
-                                    <button class="btn-main" style="padding: 4px 8px; font-size: 0.75rem;" onclick="copyPhone()">نسخ الرقم 📞</button>
-                                    <button class="btn-delivery" style="padding: 4px 8px; font-size: 0.75rem;" onclick="openBookingWithDelivery('delivery')">طلب توصيل 🚚</button>
-                                    <button class="btn-main" style="padding: 4px 8px; font-size: 0.75rem; background:#3b82f6;" onclick="openBookingWithDelivery('booking')">حجز 📅</button>
-                                </div>
+                cat.subs.forEach((sub, subIndex) => {
+                    catHTML += `
+                        <div class="subcategory-block">
+                            <div class="subcategory-header">
+                                <span>📂 ${sub.name} (${sub.services.length})</span>
+                                ${(currentRole === 'owner' || currentRole === 'agent') ? `<button class="btn-danger" style="padding: 2px 6px; font-size: 0.7rem;" onclick="deleteSubCategory(${catIndex}, ${subIndex})">حذف الفرع 🗑️</button>` : ''}
                             </div>
-                        `;
+                    `;
+
+                    sub.services.forEach((service, serviceIndex) => {
+                        // فلترة الخدمة والمدينة بشكل منفصل
+                        const matchesService = service.title.toLowerCase().includes(serviceQuery);
+                        const matchesCity = service.city.toLowerCase().includes(cityQuery);
+
+                        if (matchesService && matchesCity) {
+                            catHTML += `
+                                <div class="service-item">
+                                    <img src="${service.img}" class="service-img" alt="صورة الخدمة">
+                                    <div class="service-info">
+                                        <strong>🔹 ${service.title}</strong>
+                                        <span class="price-tag">${service.price} ريال</span>
+                                        <span class="merchant-location"><i class="fas fa-map-marker-alt"></i> ${service.city}</span>
+                                        <span class="rating"><i class="fas fa-star"></i> ${service.rating}.0 (تقييم ممتاز)</span>
+                                    </div>
+                                    <div class="action-btns">
+                                        ${currentRole === 'merchant' || currentRole === 'owner' ? `<button class="btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="deleteService(${catIndex}, ${subIndex}, ${serviceIndex})">حذف الخدمة 🗑️</button>` : ''}
+                                        <button class="btn-main" style="padding: 4px 8px; font-size: 0.75rem;" onclick="copyPhone()">نسخ الرقم 📞</button>
+                                        <button class="btn-delivery" style="padding: 4px 8px; font-size: 0.75rem;" onclick="openBookingWithDelivery('delivery')">طلب توصيل 🚚</button>
+                                        <button class="btn-main" style="padding: 4px 8px; font-size: 0.75rem; background:#3b82f6;" onclick="openBookingWithDelivery('booking')">حجز 📅</button>
+                                    </div>
+                                </div>
+                            `;
+                        }
                     });
 
                     catHTML += `</div>`;
@@ -358,6 +454,60 @@
             });
         }
 
+        /* 🛠️ وظائف الإضافة والحذف للمالك والمفوض */
+        function addMainCategory() {
+            const title = document.getElementById('newMainCategoryTitle').value.trim();
+            if(title) {
+                data.push({ title: title, subs: [] });
+                document.getElementById('newMainCategoryTitle').value = '';
+                renderCategories();
+                alert("تم إضافة المجلد الرئيسي بنجاح!");
+            }
+        }
+
+        function deleteMainCategory(catIndex) {
+            if(confirm("هل أنت تأكد من حذف هذا المجلد الرئيسي بكافة أقسامه؟")) {
+                data.splice(catIndex, 1);
+                renderCategories();
+            }
+        }
+
+        function addSubCategory() {
+            const catIndex = document.getElementById('targetMainCategorySelect').value;
+            const subTitle = document.getElementById('newSubCategoryTitle').value.trim();
+            if(subTitle) {
+                data[catIndex].subs.push({ name: subTitle, services: [] });
+                document.getElementById('newSubCategoryTitle').value = '';
+                renderCategories();
+                alert("تم إضافة القسم الفرعي بنجاح!");
+            }
+        }
+
+        function addSubCategoryByAgent() {
+            const catIndex = document.getElementById('agentMainCategorySelect').value;
+            const subTitle = document.getElementById('agentSubCategoryTitle').value.trim();
+            if(subTitle) {
+                data[catIndex].subs.push({ name: subTitle, services: [] });
+                document.getElementById('agentSubCategoryTitle').value = '';
+                renderCategories();
+                alert("تم إضافة القسم الفرعي بنجاح بواسطة المفوض!");
+            }
+        }
+
+        function deleteSubCategory(catIndex, subIndex) {
+            if(confirm("هل أنت تأكد من حذف هذا القسم الفرعي؟")) {
+                data[catIndex].subs.splice(subIndex, 1);
+                renderCategories();
+            }
+        }
+
+        function deleteService(catIndex, subIndex, serviceIndex) {
+            if(confirm("هل تريد حذف هذه الخدمة؟")) {
+                data[catIndex].subs[subIndex].services.splice(serviceIndex, 1);
+                renderCategories();
+            }
+        }
+
         function filterServices() { renderCategories(); }
 
         function openBookingWithDelivery(type) {
@@ -366,34 +516,26 @@
         }
 
         function addNewProductByMerchant() {
+            const catIndex = document.getElementById('merchantSubSelect').value;
             const title = document.getElementById('pTitle').value;
+            const city = document.getElementById('pCity').value || "السعودية";
             const price = document.getElementById('pPrice').value;
             const img = document.getElementById('pImg').value || "https://via.placeholder.com/150";
 
-            if(title && price) {
-                data[0].subs[0].services.push({ title: title, price: Number(price), rating: 5, img: img });
+            if(title && price && data[catIndex].subs.length > 0) {
+                data[catIndex].subs[0].services.push({ title: title, price: Number(price), city: city, rating: 5, img: img });
                 renderCategories();
-                alert("تم إدراج الخدمة بنجاح وتحديث إحصائيات المنصة!");
+                alert("تم إدراج الخدمة بنجاح وتحديث المنصة!");
                 document.getElementById('pTitle').value = '';
                 document.getElementById('pPrice').value = '';
             } else {
-                alert("يرجى إدخال اسم الخدمة والسعر!");
+                alert("يرجى تعبئة الحقول والتأكد من وجود قسم فرعي!");
             }
         }
 
         function sendOTP() {
             const phone = document.getElementById('inputPhone').value.trim();
             if(!phone) { alert("يرجى إدخال رقم الجوال"); return; }
-
-            const isOwner = systemUsers.owners.includes(phone);
-            const isAgent = systemUsers.agents.includes(phone);
-            const isMerchant = systemUsers.merchants.includes(phone);
-
-            if(!isOwner && !isAgent && !isMerchant) {
-                alert("عذراً، هذا الرقم غير مسجل كشريك أو مالك في المنصة!");
-                return;
-            }
-
             tempPhone = phone;
             document.getElementById('stepPhone').style.display = 'none';
             document.getElementById('stepOTP').style.display = 'block';
@@ -403,20 +545,9 @@
             const otp = document.getElementById('inputOTP').value.trim();
             if(otp === "1234") {
                 closeModal('loginModal');
-                document.getElementById('sessionBar').style.display = 'flex';
-                document.getElementById('sessionPhone').innerText = tempPhone;
-                document.getElementById('authBtn').style.display = 'none';
-
-                if(systemUsers.owners.includes(tempPhone)) {
-                    document.getElementById('sessionRole').innerText = "المالك 👑";
-                    document.getElementById('ownerPanel').classList.add('active');
-                } else if(systemUsers.agents.includes(tempPhone)) {
-                    document.getElementById('sessionRole').innerText = "المفوض 💼";
-                    document.getElementById('agentPanel').classList.add('active');
-                } else if(systemUsers.merchants.includes(tempPhone)) {
-                    document.getElementById('sessionRole').innerText = "التاجر 🏪";
-                    document.getElementById('merchantPanel').classList.add('active');
-                }
+                if(systemUsers.owners.includes(tempPhone)) switchView('owner');
+                else if(systemUsers.agents.includes(tempPhone)) switchView('agent');
+                else switchView('merchant');
             } else {
                 alert("رمز OTP غير صحيح!");
             }
@@ -432,13 +563,7 @@
             if(phone) { systemUsers.merchants.push(phone); alert(`تم تسجيل التاجر برقم (${phone})!`); document.getElementById('newMerchantPhone').value = ''; }
         }
 
-        function logout() {
-            document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active'));
-            document.getElementById('sessionBar').style.display = 'none';
-            document.getElementById('authBtn').style.display = 'block';
-            document.getElementById('stepPhone').style.display = 'block';
-            document.getElementById('stepOTP').style.display = 'none';
-        }
+        function logout() { switchView('client'); }
 
         function toggleCategory(index) {
             const el = document.getElementById(`sub-${index}`);
