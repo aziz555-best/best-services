@@ -1,614 +1,533 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BEST - منصة الخدمات الشاملة</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #10b981;
-            --primary-dark: #059669;
-            --secondary: #1f2937;
-            --bg-light: #f3f4f6;
-            --white: #ffffff;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منصة BEST (أفضل) - منصة الخدمات الشاملة</title>
+  <style>
+    :root {
+      --primary: #1d4ed8;
+      --primary-dark: #1e40af;
+      --accent: #10b981;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --danger: #ef4444;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 60px; }
+    
+    /* Header & Nav */
+    header { background: var(--primary-dark); color: white; padding: 1rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; color: #fff; }
+    .auth-badge { background: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
+    .badge-verified { color: #34d399; font-weight: bold; }
+    
+    /* Global Control Bar */
+    .role-bar { background: #0f172a; color: #fff; padding: 8px; text-align: center; font-size: 0.85rem; display: flex; justify-content: center; gap: 10px; align-items: center; }
+    .role-btn { background: #334155; border: none; color: white; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+    .role-btn.active { background: var(--primary); font-weight: bold; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-light); color: var(--secondary); padding-bottom: 50px; }
+    /* Layout Container */
+    .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+    
+    /* Search & Filter Section */
+    .search-section { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; }
+    .search-input { flex: 1; min-width: 180px; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; }
+    .filter-select { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; background: white; }
 
-        /* Header & Logo */
-        header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: var(--white); padding: 20px 15px; text-align: center; box-shadow: var(--shadow); position: relative; }
-        .logo-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 5px; }
-        .logo-box { background: var(--white); color: var(--primary-dark); font-weight: 900; font-size: 1.8rem; padding: 5px 15px; border-radius: 8px; letter-spacing: 2px; }
-        
-        .login-btn-header { position: absolute; left: 15px; top: 20px; background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
-        .login-btn-header:hover { background: white; color: var(--primary-dark); }
+    /* Admin Panels Section */
+    .admin-panel { background: #fff; border: 2px solid var(--primary); border-radius: 12px; padding: 20px; margin-bottom: 25px; display: none; }
+    .admin-panel.active { display: block; }
+    .panel-title { font-size: 1.2rem; font-weight: bold; color: var(--primary-dark); margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+    
+    /* Forms & Grid Controls */
+    .form-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+    .form-control { flex: 1; min-width: 150px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; }
+    .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-accent { background: var(--accent); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-sm { padding: 4px 8px; font-size: 0.8rem; }
 
-        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+    /* Main Directory / Folders */
+    .folder-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 15px; overflow: hidden; }
+    .folder-header { background: #f1f5f9; padding: 12px 18px; font-weight: bold; font-size: 1.1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .subfolder-container { padding: 15px; border-top: 1px solid var(--border); }
+    .subfolder-title { font-weight: 700; color: #334155; margin: 10px 0 8px 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; display: flex; justify-content: space-between; }
 
-        /* Demo View Switcher Bar */
-        .demo-switcher { background: #3b82f6; color: white; padding: 12px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; }
-        .demo-switcher button { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; font-size: 0.9rem; padding: 6px 12px; }
-        .demo-switcher button:hover { background: white; color: #3b82f6; }
-        .demo-switcher button.active-role { background: white; color: #3b82f6; font-weight: bold; }
+    /* Service / Product Cards */
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; margin-top: 10px; }
+    .service-card { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 12px; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .service-title { font-weight: bold; font-size: 1rem; margin-bottom: 5px; }
+    .service-meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+    .service-price { color: var(--accent); font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; }
+    .card-actions { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
 
-        /* Control Panels Area */
-        .panel-content { display: none; background: var(--white); padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow); border-top: 4px solid var(--primary); }
-        .panel-content.active { display: block; }
+    /* Modals */
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .modal-overlay.active { display: flex; }
+    .modal-box { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .modal-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; text-align: center; }
 
-        .user-session-bar { display: none; justify-content: space-between; align-items: center; background: #e0f2fe; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #bae6fd; }
-
-        button { cursor: pointer; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; }
-        .btn-main { background: var(--primary); color: var(--white); }
-        .btn-main:hover { background: var(--primary-dark); }
-        .btn-danger { background: #ef4444; color: var(--white); }
-        .btn-danger:hover { background: #dc2626; }
-        .btn-secondary { background: #6b7280; color: var(--white); }
-        .btn-delivery { background: #f59e0b; color: var(--white); }
-
-        /* Search & Filter Bar */
-        .search-filter-box { background: var(--white); padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--shadow); display: flex; gap: 10px; flex-wrap: wrap; }
-        .search-filter-box input, .search-filter-box select { flex: 1; min-width: 150px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
-
-        /* Categories Layout */
-        .category-card { background: var(--white); border-radius: 10px; margin-bottom: 15px; box-shadow: var(--shadow); overflow: hidden; }
-        .category-header { padding: 18px; background: #fff; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #eee; }
-        .category-title { font-size: 1.15rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
-        .badge { background: #e5e7eb; color: var(--secondary); padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; }
-
-        .subcategories { display: block; padding: 15px; background: #fafafa; }
-        .subcategory-block { background: var(--white); border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
-        .subcategory-header { font-weight: bold; font-size: 1rem; margin-bottom: 10px; color: var(--primary-dark); border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
-
-        .service-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed #e5e7eb; flex-wrap: wrap; gap: 10px; }
-        .service-item:last-child { border-bottom: none; }
-        .service-info { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 200px; }
-        .service-img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; border: 1px solid #ddd; }
-        .price-tag { color: var(--primary-dark); font-weight: bold; font-size: 1.05rem; }
-        .merchant-location { font-size: 0.8rem; color: #666; }
-        .rating { color: #f59e0b; font-size: 0.85rem; }
-
-        .action-btns { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
-
-        /* Modals */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: var(--white); padding: 25px; border-radius: 12px; width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; font-weight: bold; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
-    </style>
+    /* Stats Counter */
+    .stats-box { display: flex; gap: 15px; background: #eff6ff; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
+    .stat-item { flex: 1; text-align: center; }
+    .stat-val { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
+    .stat-lbl { font-size: 0.75rem; color: var(--text-muted); }
+  </style>
 </head>
 <body>
 
-    <!-- Header & Logo -->
-    <header>
-        <button class="login-btn-header" id="authBtn" onclick="openModal('loginModal')"><i class="fas fa-lock"></i> دخول الشركاء والمالك</button>
-        <div class="logo-container">
-            <div class="logo-box">BEST</div>
-            <h1 style="font-size: 1.5rem;">منصة الخدمات الشاملة</h1>
-        </div>
-        <p>تصفح وحجز الخدمات والتوصيل بكل سهولة</p>
-    </header>
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="logo">BEST (أفضل)</div>
+      <div id="userStatus" class="auth-badge">
+        <span>زائر</span>
+        <button class="btn btn-accent btn-sm" onclick="openModal('loginModal')">تسجيل الدخول / نفاذ</button>
+      </div>
+    </div>
+  </header>
 
-    <div class="container">
+  <!-- Control Bar Switcher -->
+  <div class="role-bar">
+    <span>معاينة الشاشات:</span>
+    <button class="role-btn active" onclick="switchRole('client')">📱 واجهة العميل</button>
+    <button class="role-btn" onclick="switchRole('merchant')">🏪 لوحة التاجر</button>
+    <button class="role-btn" onclick="switchRole('agent')">💼 لوحة المشرف</button>
+    <button class="role-btn" onclick="switchRole('owner')">👑 لوحة المالك</button>
+  </div>
 
-        <!-- 🎭 شريط التبديل بين اللوحات للمعاينات التجريبية -->
-        <div class="demo-switcher">
-            <span><strong>👁️ التبديل بين الواجهات للمعاينة:</strong></span>
-            <button id="btnRoleClient" class="active-role" onclick="switchView('client')">📱 واجهة العميل</button>
-            <button id="btnRoleMerchant" onclick="switchView('merchant')">🏪 واجهة التاجر</button>
-            <button id="btnRoleAgent" onclick="switchView('agent')">💼 واجهة المفوض</button>
-            <button id="btnRoleOwner" onclick="switchView('owner')">👑 واجهة المالك</button>
-        </div>
+  <div class="container">
 
-        <!-- Active User Session Bar -->
-        <div class="user-session-bar" id="sessionBar">
-            <div><i class="fas fa-user-circle"></i> الوضع الحالي: <strong id="sessionRole">عميل / زائر</strong></div>
-            <button class="btn-danger" style="padding: 4px 10px; font-size: 0.8rem;" onclick="logout()">إنهاء المعاينة والتسجيل</button>
-        </div>
+    <!-- Owner Panel -->
+    <div id="panel-owner" class="admin-panel">
+      <div class="panel-title">
+        <span>👑 لوحة تحكم المالك الإدارية العليا</span>
+        <button class="btn btn-danger btn-sm" onclick="logout()">خروج</button>
+      </div>
+      
+      <div class="stats-box">
+        <div class="stat-item"><div id="stat-copies" class="stat-val">0</div><div class="stat-lbl">نسخ الرقم</div></div>
+        <div class="stat-item"><div id="stat-deliveries" class="stat-val">0</div><div class="stat-lbl">طلبات التوصيل</div></div>
+        <div class="stat-item"><div id="stat-bookings" class="stat-val">0</div><div class="stat-lbl">الحجوزات</div></div>
+      </div>
 
-        <!-- 👑 1. Owner Panel (لوحة التحكم الخاصة بالمالك) -->
-        <div id="ownerPanel" class="panel-content">
-            <h3 style="color: #8b5cf6; margin-bottom: 5px;"><i class="fas fa-crown"></i> لوحة الإدارة العليا (المالك) 👑</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">من هنا يمكنك التحكم الكامل: إضافة وحذف المجلدات الرئيسية، إضافة وحذف الفروع، واعتماد المفوضين.</p>
+      <div class="form-group">
+        <input type="text" id="newMainCategory" class="form-control" placeholder="اسم المجلد الرئيسي الجديد">
+        <button class="btn btn-primary" onclick="addMainFolder()">إضافة مجلد رئيسي</button>
+      </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 15px;">
-                <!-- إضافة مجلد رئيسي جديد -->
-                <div style="background: #f3f4f6; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;">
-                    <h4 style="font-size: 0.9rem; margin-bottom: 6px; color: #1f2937;">📁 إضافة مجلد رئيسي جديد:</h4>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="newMainCategoryTitle" placeholder="مثال: 9. خدمات الاستشارات" style="flex:1; padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
-                        <button class="btn-main" onclick="addMainCategory()">إضافة المجلد</button>
-                    </div>
-                </div>
-
-                <!-- إضافة قسم فرعي جديد -->
-                <div style="background: #f3f4f6; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;">
-                    <h4 style="font-size: 0.9rem; margin-bottom: 6px; color: #1f2937;">📂 إضافة قسم فرعي داخل مجلد:</h4>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <select id="targetMainCategorySelect" style="flex:1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; min-width: 140px;"></select>
-                        <input type="text" id="newSubCategoryTitle" placeholder="اسم القسم الفرعي..." style="flex:1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; min-width: 140px;">
-                        <button class="btn-main" onclick="addSubCategory()">إضافة الفرعي</button>
-                    </div>
-                </div>
-            </div>
-
-            <div style="background: #f3f4f6; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; margin-bottom: 12px;">
-                <h4 style="font-size: 0.9rem; margin-bottom: 6px; color: #1f2937;">➕ اعتماد رقم مفوض جديد:</h4>
-                <div style="display: flex; gap: 8px;">
-                    <input type="tel" id="newAgentPhone" placeholder="05xxxxxxxx" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
-                    <button class="btn-main" onclick="registerAgent()">اعتماد المفوض</button>
-                </div>
-            </div>
-            
-            <div style="background: #f0fdf4; padding: 12px; border: 1px solid #bbf7d0; border-radius: 8px;">
-                <p style="color: #166534;"><strong>📊 إحصائيات المالك:</strong> إجمالي طلبات الحجز والتوصيل ونسخ الأرقام من العميل: <span id="copyCounterCount" style="color:var(--primary-dark); font-weight:bold; font-size: 1.1rem;">0</span> مرة</p>
-            </div>
-        </div>
-
-        <!-- 💼 2. Agent Panel (لوحة التحكم الخاصة بالمفوض) -->
-        <div id="agentPanel" class="panel-content">
-            <h3 style="color: #2563eb; margin-bottom: 5px;"><i class="fas fa-user-tie"></i> لوحة التحكم (المفوض) 💼</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">من هنا يمكنك إضافة وحذف الأقسام الفرعية، وتسجيل التجار الجدد في نطاقك.</p>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
-                <!-- إضافة قسم فرعي من لوحة المفوض -->
-                <div style="background: #eff6ff; padding: 12px; border: 1px solid #bfdbfe; border-radius: 8px;">
-                    <h4 style="font-size: 0.9rem; margin-bottom: 6px; color: #1e40af;">📂 إضافة قسم فرعي جديد:</h4>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <select id="agentMainCategorySelect" style="flex:1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; min-width: 130px;"></select>
-                        <input type="text" id="agentSubCategoryTitle" placeholder="اسم القسم الفرعي..." style="flex:1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; min-width: 130px;">
-                        <button class="btn-main" onclick="addSubCategoryByAgent()">إضافة القسم</button>
-                    </div>
-                </div>
-
-                <!-- إضافة تاجر -->
-                <div style="background: #eff6ff; padding: 12px; border: 1px solid #bfdbfe; border-radius: 8px;">
-                    <h4 style="font-size: 0.9rem; margin-bottom: 6px; color: #1e40af;">➕ تسجيل تاجر جديد تحت إشرافك:</h4>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="tel" id="newMerchantPhone" placeholder="05xxxxxxxx" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
-                        <button class="btn-main" onclick="registerMerchant()">تسجيل التاجر</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 🏪 3. Merchant Panel (لوحة التاجر) -->
-        <div id="merchantPanel" class="panel-content">
-            <h3 style="color: #d97706; margin-bottom: 5px;"><i class="fas fa-store"></i> لوحة التحكم (التاجر) 🏪</h3>
-            <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">إضافة الخدمات والمنتجات والعروض الخاصة بك مباشرة في المنصة.</p>
-
-            <div style="background: #fffbeb; padding: 15px; border: 1px solid #fde68a; border-radius: 8px;">
-                <h4 style="margin-bottom: 10px; color: #92400e;">➕ إضافة منتج أو خدمة جديدة:</h4>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
-                    <div class="form-group">
-                        <label>اختر القسم الفرعي:</label>
-                        <select id="merchantSubSelect"></select>
-                    </div>
-                    <div class="form-group">
-                        <label>اسم المنتج / الخدمة:</label>
-                        <input type="text" id="pTitle" placeholder="مثال: صيانة مكيفات سبليت">
-                    </div>
-                    <div class="form-group">
-                        <label>المدينة / المنطقة:</label>
-                        <input type="text" id="pCity" placeholder="السعودية - جازان - أبو عريش">
-                    </div>
-                    <div class="form-group">
-                        <label>السعر (ريال):</label>
-                        <input type="number" id="pPrice" placeholder="150">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>رابط صورة المنتج/الخدمة (اختياري):</label>
-                    <input type="url" id="pImg" placeholder="https://via.placeholder.com/150">
-                </div>
-                <button class="btn-main" style="width: 100%; margin-top: 5px;" onclick="addNewProductByMerchant()">نشر الخدمة في المنصة 🚀</button>
-            </div>
-        </div>
-
-        <!-- 🔍 Search & Filter Bar (مفصل بشكل محدد ومستقل) -->
-        <div class="search-filter-box">
-            <input type="text" id="searchServiceInput" placeholder="🔍 ابحث باسم الخدمة..." onkeyup="filterServices()">
-            <input type="text" id="searchCityInput" placeholder="📍 ابحث باسم المدينة أو المنطقة..." onkeyup="filterServices()">
-            <select id="priceFilter" onchange="filterServices()">
-                <option value="all">ترتيب حسب السعر</option>
-                <option value="low">السعر: الأقل إلى الأعلى</option>
-                <option value="high">السعر: الأعلى إلى الأقل</option>
-            </select>
-        </div>
-
-        <!-- Public Services List (عرض البيانات بالكامل مع الصلاحيات) -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3 style="color: var(--secondary);"><i class="fas fa-th-list"></i> جميع المجلدات والأقسام الفرعية</h3>
-            <span id="roleNotice" style="font-size: 0.85rem; font-weight: bold; padding: 4px 10px; border-radius: 6px; background: #e5e7eb; color: #374151;">معاينة: واجهة العميل</span>
-        </div>
-
-        <div id="categoriesContainer"></div>
-
+      <div class="form-group">
+        <input type="tel" id="supervisorPhone" class="form-control" placeholder="رقم جوال المشرف المعتمد (05xxxxxxxx)">
+        <button class="btn btn-accent" onclick="addSupervisor()">اعتماد مشرف جديد</button>
+      </div>
     </div>
 
-    <!-- Modal OTP Login -->
-    <div class="modal" id="loginModal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 15px;"><i class="fas fa-user-shield"></i> تسجيل دخول الشركاء والمالك</h3>
-
-            <div id="stepPhone">
-                <div class="form-group">
-                    <label>رقم الجوال المسجل:</label>
-                    <input type="tel" id="inputPhone" placeholder="05xxxxxxxx">
-                </div>
-                <button class="btn-main" style="width: 100%;" onclick="sendOTP()">إرسال رمز التحقق OTP</button>
-            </div>
-            <div id="stepOTP" style="display: none;">
-                <div class="form-group">
-                    <label>رمز التحقق (OTP):</label>
-                    <input type="text" id="inputOTP" placeholder="****" style="text-align: center; letter-spacing: 5px; font-weight: bold;">
-                </div>
-                <button class="btn-main" style="width: 100%;" onclick="verifyOTP()">تأكيد الدخول</button>
-            </div>
-            <button class="btn-secondary" style="width: 100%; margin-top: 10px;" onclick="closeModal('loginModal')">إلغاء</button>
-        </div>
+    <!-- Agent / Supervisor Panel -->
+    <div id="panel-agent" class="admin-panel">
+      <div class="panel-title">
+        <span>💼 لوحة إشراف وإدارة الأقسام الفرعية</span>
+        <button class="btn btn-danger btn-sm" onclick="logout()">خروج</button>
+      </div>
+      <div class="form-group">
+        <select id="agentMainSelect" class="form-control"></select>
+        <input type="text" id="newSubCategory" class="form-control" placeholder="اسم القسم الفرعي الجديد">
+        <button class="btn btn-primary" onclick="addSubFolder()">إضافة قسم فرعي</button>
+      </div>
     </div>
 
-    <!-- Modal Booking / Delivery -->
-    <div class="modal" id="bookingModal">
-        <div class="modal-content">
-            <h3 id="modalTitle"><i class="fas fa-calendar-check"></i> طلب حجز / توصيل</h3>
-            <form onsubmit="submitBooking(event)">
-                <div class="form-group">
-                    <label>اسم العميل:</label>
-                    <input type="text" required placeholder="أدخل اسمك الكريم">
-                </div>
-                <div class="form-group">
-                    <label>رقم جوال العميل:</label>
-                    <input type="tel" required placeholder="05xxxxxxxx">
-                </div>
-                <div class="form-group">
-                    <label>نوع الطلب:</label>
-                    <select id="orderType">
-                        <option value="booking">حجز موعد / تقديم خدمة</option>
-                        <option value="delivery">طلب توصيل للمنزل 🚚</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>العنوان / المدينة / رابط الموقع:</label>
-                    <input type="text" placeholder="السعودية - جازان - أبو عريش...">
-                </div>
-                <button type="submit" class="btn-main" style="width: 100%;">تأكيد وإرسال الطلب</button>
-                <button type="button" class="btn-secondary" style="width: 100%; margin-top: 8px;" onclick="closeModal('bookingModal')">إلغاء</button>
-            </form>
-        </div>
+    <!-- Merchant Panel -->
+    <div id="panel-merchant" class="admin-panel">
+      <div class="panel-title">
+        <span>🏪 لوحة التاجر - إضافة خدمات ومنتجات</span>
+        <button class="btn btn-danger btn-sm" onclick="logout()">خروج</button>
+      </div>
+      <div class="form-group">
+        <select id="merchantSubSelect" class="form-control"></select>
+        <input type="text" id="prodTitle" class="form-control" placeholder="اسم الخدمة / المنتج">
+        <input type="text" id="prodCity" class="form-control" placeholder="المدينة / المنطقة">
+        <input type="number" id="prodPrice" class="form-control" placeholder="السعر (ريال)">
+        <button class="btn btn-accent" onclick="addService()">نشر الخدمة فوراً 🚀</button>
+      </div>
     </div>
 
-    <script>
-        let systemUsers = {
-            owners: ["0500000000"],
-            agents: ["0511111111"],
-            merchants: ["0522222222"]
-        };
+    <!-- Search & Filter Controls -->
+    <div class="search-section">
+      <input type="text" id="searchKeyword" class="search-input" placeholder="🔍 ابحث باسم الخدمة أو السلعة..." oninput="renderApp()">
+      <input type="text" id="searchCity" class="search-input" placeholder="📍 المدينة (مثل: جازان، أبو عريش...)" oninput="renderApp()">
+      <select id="sortSelect" class="filter-select" onchange="renderApp()">
+        <option value="default">الترتيب الافتراضي</option>
+        <option value="low">السعر: من الأقل للأعلى</option>
+        <option value="high">السعر: من الأعلى للأقل</option>
+      </select>
+    </div>
 
-        let tempPhone = "";
-        let copyCounter = 0;
-        let currentRole = "client"; // client, merchant, agent, owner
+    <!-- Main Directory Rendering Area -->
+    <div id="directoryArea"></div>
 
-        // 🗂️ البيانات الكاملة المعتمدة 100% (8 مجلدات رئيسية)
-        let data = [
-            {
-                title: "1. خدمات الأعمال والتقنية",
-                subs: [
-                    { name: "التقنية والبرمجة", services: [{ title: "تصميم وإنشاء مواقع وتطبيقات", price: 1500, city: "جازان - أبو عريش", rating: 5, img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=150" }, { title: "صيانة شبكات وكاميرات مراقبة", price: 300, city: "الرياض", rating: 5, img: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=150" }] },
-                    { name: "التسويق والتصميم", services: [{ title: "إدارة حسابات التواصل الاجتماعي", price: 800, city: "جدة", rating: 5, img: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=150" }] },
-                    { name: "خدمات حكومية وإدارية", services: [{ title: "تعقيب معاملات وشؤون تجارية", price: 200, city: "جازان", rating: 5, img: "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=150" }] }
-                ]
-            },
-            {
-                title: "2. المقاولات والبناء",
-                subs: [
-                    { name: "البناء والتأسيس", services: [{ title: "المقاولات العامة والمباني (عظم / مفتاح)", price: 50000, city: "جازان - صبيا", rating: 5, img: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?w=150" }] },
-                    { name: "التشطيبات والديكور", services: [{ title: "دهانات وورق جدران وديكورات فوم", price: 1200, city: "أبو عريش", rating: 5, img: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=150" }] },
-                    { name: "الترميم والصيانة المعمارية", services: [{ title: "ترميم وتجديد المنازل والمباني", price: 8000, city: "الدمام", rating: 5, img: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=150" }] }
-                ]
-            },
-            {
-                title: "3. العقارات",
-                subs: [
-                    { name: "بيع العقارات", services: [{ title: "بيع اراضي ومخططات سكنية", price: 120000, city: "جازان", rating: 5, img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=150" }] },
-                    { name: "إيجار العقارات", services: [{ title: "شقق وفلل للإيجار (سنوي / شهري)", price: 2000, city: "أبو عريش", rating: 5, img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=150" }] }
-                ]
-            },
-            {
-                title: "4. البيع والشراء - حراج وشامل",
-                subs: [
-                    { name: "بيع وشراء السيارات والمركبات", services: [{ title: "سيارات جديدة ومستعملة للبيع", price: 45000, city: "جازان", rating: 5, img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=150" }] },
-                    { name: "الأجهزة والإلكترونيات", services: [{ title: "جوالات وأجهزة ذكية جديدة ومستعملة", price: 2500, city: "أبو عريش", rating: 5, img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150" }] }
-                ]
-            },
-            {
-                title: "5. المواد الغذائية والمطاعم",
-                subs: [
-                    { name: "المطاعم والمأكولات", services: [{ title: "وجبات سريعة وشواء ومطابخ", price: 35, city: "أبو عريش", rating: 5, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150" }] }
-                ]
-            },
-            {
-                title: "6. الصحة والمراكز الطبية",
-                subs: [
-                    { name: "المستشفيات والمراكز التخصصية", services: [{ title: "مستشفيات ومجمعات طبية عامة", price: 200, city: "جازان", rating: 5, img: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=150" }] }
-                ]
-            },
-            {
-                title: "7. الخدمات المنزلية والصيانة",
-                subs: [
-                    { name: "صيانة وإصلاح", services: [{ title: "صيانة وتنظيف مكيفات سبليت وشباك", price: 100, city: "أبو عريش", rating: 5, img: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=150" }] }
-                ]
-            },
-            {
-                title: "8. خدمات السيارات والنقل",
-                subs: [
-                    { name: "صيانة ورش السيارات", services: [{ title: "ميكانيكا وفحص كمبيوتر وتغيير زيوت", price: 80, city: "جازان", rating: 5, img: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=150" }] }
-                ]
-            }
-        ];
+  </div>
 
-        // 🟢 التبديل التفاعلي والمباشر بين الواجهات مع التأكيد البصري
-        function switchView(role) {
-            currentRole = role;
+  <!-- Auth Modal -->
+  <div id="loginModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-title">تسجيل الدخول إلى BEST</div>
+      
+      <div class="form-group" style="flex-direction: column;">
+        <label style="font-size: 0.85rem; font-weight: bold;">1. الدخول السريع عبر الجوال (OTP):</label>
+        <input type="tel" id="loginPhone" class="form-control" placeholder="رقم الجوال (05xxxxxxxx)">
+        <input type="password" id="loginPass" class="form-control" placeholder="الرمز السري (1111 للمالك) أو رمز OTP">
+        <button class="btn btn-primary" onclick="handleLogin('phone')">تأكيد الدخول</button>
+      </div>
+
+      <hr style="margin: 15px 0; border: none; border-top: 1px solid var(--border);">
+
+      <div class="form-group" style="flex-direction: column;">
+        <label style="font-size: 0.85rem; font-weight: bold;">2. الدخول الموثق عبر النفاذ الوطني:</label>
+        <button class="btn btn-accent" style="width: 100%;" onclick="handleLogin('nafath')">🟢 الدخول بواسطة نفاذ (✅ توثيق)</button>
+      </div>
+
+      <button class="btn btn-danger btn-sm" style="width: 100%; margin-top: 10px;" onclick="closeModal('loginModal')">إلغاء</button>
+    </div>
+  </div>
+
+  <!-- Booking Modal -->
+  <div id="bookingModal" class="modal-overlay">
+    <div class="modal-box">
+      <div id="bookingModalTitle" class="modal-title">تقديم طلب</div>
+      <div class="form-group" style="flex-direction: column;">
+        <input type="text" id="custName" class="form-control" placeholder="اسمك الكريم">
+        <input type="tel" id="custPhone" class="form-control" placeholder="رقم الجوال للتواصل">
+        <input type="text" id="custLoc" class="form-control" placeholder="العنوان / المدينة / رابط الموقع">
+        <button class="btn btn-accent" onclick="confirmBooking()">تأكيد وإرسال الطلب</button>
+        <button class="btn btn-danger btn-sm" onclick="closeModal('bookingModal')">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- State & App Data ---
+    let currentRole = 'client'; // client, merchant, agent, owner
+    let currentUser = { loggedIn: false, phone: '', role: 'client', verified: false };
+    
+    let stats = { copies: 0, deliveries: 0, bookings: 0 };
+    let supervisors = ['0500000000']; // Default allowed supervisors
+
+    let db = [
+      {
+        id: 'cat_1',
+        name: 'خدمات الأعمال والتقنية 💻',
+        subs: [
+          {
+            id: 'sub_1_1',
+            name: 'البرمجة والتطوير',
+            services: [
+              { id: 's1', title: 'تطوير مواقع وتطبيقات إلكترونية', price: 1500, city: 'جازان', phone: '0555123456', merchantPhone: '0555123456' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'cat_2',
+        name: 'المقاولات والبناء 🏗️',
+        subs: [
+          {
+            id: 'sub_2_1',
+            name: 'البناء والتأسيس',
+            services: [
+              { id: 's2', title: 'مقاولات عامة وتسليم مفتاح', price: 50000, city: 'أبو عريش', phone: '0555987654', merchantPhone: '0555987654' }
+            ]
+          }
+        ]
+      }
+    ];
+
+    let activeBookingType = '';
+
+    // --- Core Functions ---
+    function init() {
+      renderApp();
+    }
+
+    function switchRole(role) {
+      currentRole = role;
+      document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+      if(role !== 'client') {
+        const panel = document.getElementById(`panel-${role}`);
+        if(panel) panel.classList.add('active');
+      }
+      renderApp();
+    }
+
+    function renderApp() {
+      renderStats();
+      populateDropdowns();
+
+      const searchKey = document.getElementById('searchKeyword').value.trim().toLowerCase();
+      const searchCity = document.getElementById('searchCity').value.trim().toLowerCase();
+      const sortVal = document.getElementById('sortSelect').value;
+
+      const area = document.getElementById('directoryArea');
+      area.innerHTML = '';
+
+      db.forEach(cat => {
+        let catHasMatch = false;
+        let subBlocks = '';
+
+        cat.subs.forEach(sub => {
+          let filteredServices = sub.services.filter(s => {
+            const matchKey = s.title.toLowerCase().includes(searchKey);
+            const matchCity = s.city.toLowerCase().includes(searchCity);
+            return matchKey && matchCity;
+          });
+
+          if (sortVal === 'low') filteredServices.sort((a,b) => a.price - b.price);
+          if (sortVal === 'high') filteredServices.sort((a,b) => b.price - a.price);
+
+          if (filteredServices.length > 0 || currentRole === 'owner' || currentRole === 'agent') {
+            catHasMatch = true;
             
-            // تحديث تمييز أزرار الشريطة
-            document.querySelectorAll('.demo-switcher button').forEach(btn => btn.classList.remove('active-role'));
-            document.querySelectorAll('.panel-content').forEach(p => p.classList.remove('active'));
-            document.getElementById('sessionBar').style.display = 'flex';
-
-            const notice = document.getElementById('roleNotice');
-
-            if(role === 'owner') {
-                document.getElementById('btnRoleOwner').classList.add('active-role');
-                document.getElementById('sessionRole').innerText = "المالك 👑";
-                document.getElementById('ownerPanel').classList.add('active');
-                notice.innerText = "معاينة واجهة الإدارة: المالك 👑 (تظهر صلاحيات الحذف والإضافة بالكامل)";
-                notice.style.background = "#f3e8ff"; notice.style.color = "#6b21a8";
-            } else if(role === 'agent') {
-                document.getElementById('btnRoleAgent').classList.add('active-role');
-                document.getElementById('sessionRole').innerText = "المفوض 💼";
-                document.getElementById('agentPanel').classList.add('active');
-                notice.innerText = "معاينة واجهة الإدارة: المفوض 💼 (تظهر صلاحيات حذف وإضافة الأقسام الفرعية)";
-                notice.style.background = "#dbeafe"; notice.style.color = "#1e40af";
-            } else if(role === 'merchant') {
-                document.getElementById('btnRoleMerchant').classList.add('active-role');
-                document.getElementById('sessionRole').innerText = "التاجر 🏪";
-                document.getElementById('merchantPanel').classList.add('active');
-                notice.innerText = "معاينة واجهة التاجر 🏪 (إضافة وحذف منتجاته الخاصة)";
-                notice.style.background = "#fef3c7"; notice.style.color = "#92400e";
-            } else {
-                document.getElementById('btnRoleClient').classList.add('active-role');
-                document.getElementById('sessionRole').innerText = "عميل / زائر 📱";
-                notice.innerText = "معاينة واجهة العميل 📱 (تظهر أزرار: نسخ الرقم، طلب توصيل، وحجز)";
-                notice.style.background = "#e5e7eb"; notice.style.color = "#374151";
-            }
-            renderCategories();
-        }
-
-        function populateSelects() {
-            const ownerSel = document.getElementById('targetMainCategorySelect');
-            const agentSel = document.getElementById('agentMainCategorySelect');
-            const merchantSubSel = document.getElementById('merchantSubSelect');
-            
-            ownerSel.innerHTML = '';
-            agentSel.innerHTML = '';
-            merchantSubSel.innerHTML = '';
-
-            data.forEach((cat, idx) => {
-                ownerSel.innerHTML += `<option value="${idx}">${cat.title}</option>`;
-                agentSel.innerHTML += `<option value="${idx}">${cat.title}</option>`;
-
-                cat.subs.forEach(sub => {
-                    merchantSubSel.innerHTML += `<option value="${idx}">${cat.title} ➔ ${sub.name}</option>`;
-                });
+            let servicesGrid = '';
+            filteredServices.forEach(srv => {
+              servicesGrid += `
+                <div class="service-card">
+                  <div class="service-title">${srv.title}</div>
+                  <div class="service-meta">📍 ${srv.city} | 📞 ${srv.phone}</div>
+                  <div class="service-price">${srv.price} ريال</div>
+                  <div class="card-actions">
+                    ${currentRole === 'client' ? `
+                      <button class="btn btn-primary btn-sm" onclick="copyNumber('${srv.phone}')">نسخ الرقم 📞</button>
+                      <button class="btn btn-accent btn-sm" onclick="openBooking('delivery', '${srv.id}')">طلب توصيل 🚚</button>
+                      <button class="btn btn-primary btn-sm" onclick="openBooking('booking', '${srv.id}')">حجز 📅</button>
+                    ` : ''}
+                    ${(currentRole === 'owner' || currentRole === 'agent' || (currentRole === 'merchant' && currentUser.phone === srv.merchantPhone)) ? `
+                      <button class="btn btn-danger btn-sm" onclick="deleteService('${cat.id}', '${sub.id}', '${srv.id}')">🗑️ حذف</button>
+                    ` : ''}
+                  </div>
+                </div>
+              `;
             });
+
+            subBlocks += `
+              <div class="subfolder-title">
+                <span>📁 ${sub.name} (${filteredServices.length})</span>
+                ${(currentRole === 'owner' || currentRole === 'agent') ? `<button class="btn btn-danger btn-sm" onclick="deleteSubFolder('${cat.id}', '${sub.id}')">حذف الفرع</button>` : ''}
+              </div>
+              <div class="services-grid">${servicesGrid || '<p style="font-size:0.8rem;color:#888;">لا توجد خدمات مطابقة هنا</p>'}</div>
+            `;
+          }
+        });
+
+        if (catHasMatch || currentRole === 'owner') {
+          const folderHTML = `
+            <div class="folder-card">
+              <div class="folder-header">
+                <span>🗂️ ${cat.name}</span>
+                ${currentRole === 'owner' ? `<button class="btn btn-danger btn-sm" onclick="deleteMainFolder('${cat.id}')">🗑️ حذف المجلد بالكامل</button>` : ''}
+              </div>
+              <div class="subfolder-container">${subBlocks || '<p style="font-size:0.8rem;color:#888;">لا توجد أقسام فرعية</p>'}</div>
+            </div>
+          `;
+          area.innerHTML += folderHTML;
         }
+      });
+    }
 
-        function renderCategories() {
-            populateSelects();
-            const container = document.getElementById('categoriesContainer');
-            container.innerHTML = '';
+    // --- Actions & Handlers ---
+    function copyNumber(phone) {
+      navigator.clipboard.writeText(phone);
+      stats.copies++;
+      alert('تم نسخ رقم التواصل: ' + phone);
+      renderStats();
+    }
 
-            const serviceQuery = document.getElementById('searchServiceInput').value.toLowerCase();
-            const cityQuery = document.getElementById('searchCityInput').value.toLowerCase();
+    function openBooking(type, srvId) {
+      activeBookingType = type;
+      document.getElementById('bookingModalTitle').innerText = type === 'delivery' ? 'طلب توصيل للمنزل 🚚' : 'حجز موعد / تقديم خدمة 📅';
+      openModal('bookingModal');
+    }
 
-            data.forEach((cat, catIndex) => {
-                let totalServicesCount = cat.subs.reduce((total, sub) => total + sub.services.length, 0);
+    function confirmBooking() {
+      const name = document.getElementById('custName').value;
+      const phone = document.getElementById('custPhone').value;
+      if (!name || !phone) { alert('يرجى كتابة الاسم ورقم الجوال'); return; }
 
-                let catHTML = `
-                    <div class="category-card">
-                        <div class="category-header">
-                            <div class="category-title">
-                                <i class="fas fa-folder" style="color: var(--primary);"></i> ${cat.title}
-                                ${currentRole === 'owner' ? `<button class="btn-danger" style="padding: 3px 8px; font-size: 0.75rem; margin-right: 15px;" onclick="deleteMainCategory(${catIndex})"><i class="fas fa-trash"></i> حذف المجلد الرئيسي بالكامل</button>` : ''}
-                            </div>
-                            <span class="badge">📊 ${totalServicesCount} خدمة متوفرة</span>
-                        </div>
-                        <div class="subcategories">
-                `;
+      if (activeBookingType === 'delivery') stats.deliveries++;
+      else stats.bookings++;
 
-                cat.subs.forEach((sub, subIndex) => {
-                    catHTML += `
-                        <div class="subcategory-block">
-                            <div class="subcategory-header">
-                                <span>📂 ${sub.name} (${sub.services.length})</span>
-                                ${(currentRole === 'owner' || currentRole === 'agent') ? `<button class="btn-danger" style="padding: 2px 8px; font-size: 0.75rem;" onclick="deleteSubCategory(${catIndex}, ${subIndex})"><i class="fas fa-trash"></i> حذف الفرع</button>` : ''}
-                            </div>
-                    `;
+      alert('تم إرسال طلبك بنجاح! سيتم التواصل معك قريباً.');
+      closeModal('bookingModal');
+      renderStats();
+    }
 
-                    sub.services.forEach((service, serviceIndex) => {
-                        const matchesService = service.title.toLowerCase().includes(serviceQuery);
-                        const matchesCity = service.city.toLowerCase().includes(cityQuery);
+    function addMainFolder() {
+      const name = document.getElementById('newMainCategory').value.trim();
+      if (!name) return;
+      db.push({ id: 'cat_' + Date.now(), name: name, subs: [] });
+      document.getElementById('newMainCategory').value = '';
+      renderApp();
+    }
 
-                        if (matchesService && matchesCity) {
-                            catHTML += `
-                                <div class="service-item">
-                                    <img src="${service.img}" class="service-img" alt="صورة الخدمة">
-                                    <div class="service-info">
-                                        <strong>🔹 ${service.title}</strong>
-                                        <span class="price-tag">${service.price} ريال</span>
-                                        <span class="merchant-location"><i class="fas fa-map-marker-alt"></i> ${service.city}</span>
-                                    </div>
-                                    <div class="action-btns">
-                                        <!-- 📱 أزرار تظهر حصرياً للعميل فقط -->
-                                        ${currentRole === 'client' ? `
-                                            <button class="btn-main" style="padding: 6px 10px; font-size: 0.8rem;" onclick="copyPhone()">نسخ الرقم 📞</button>
-                                            <button class="btn-delivery" style="padding: 6px 10px; font-size: 0.8rem;" onclick="openBookingWithDelivery('delivery')">طلب توصيل 🚚</button>
-                                            <button class="btn-main" style="padding: 6px 10px; font-size: 0.8rem; background:#3b82f6;" onclick="openBookingWithDelivery('booking')">حجز 📅</button>
-                                        ` : ''}
+    function deleteMainFolder(catId) {
+      if(confirm('هل أنت تأكد من حذف المجلد الرئيسي مع كافة أفرعه وخدماته؟')) {
+        db = db.filter(c => c.id !== catId);
+        renderApp();
+      }
+    }
 
-                                        <!-- 🛠️ أزرار الإدارة والتاجر -->
-                                        ${(currentRole === 'merchant' || currentRole === 'owner') ? `
-                                            <button class="btn-danger" style="padding: 5px 10px; font-size: 0.8rem;" onclick="deleteService(${catIndex}, ${subIndex}, ${serviceIndex})"><i class="fas fa-trash"></i> حذف الخدمة</button>
-                                        ` : ''}
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    });
+    function addSubFolder() {
+      const mainId = document.getElementById('agentMainSelect').value;
+      const subName = document.getElementById('newSubCategory').value.trim();
+      if (!subName || !mainId) return;
 
-                    catHTML += `</div>`;
-                });
+      const main = db.find(c => c.id === mainId);
+      if (main) {
+        main.subs.push({ id: 'sub_' + Date.now(), name: subName, services: [] });
+        document.getElementById('newSubCategory').value = '';
+        renderApp();
+      }
+    }
 
-                catHTML += `</div></div>`;
-                container.innerHTML += catHTML;
+    function deleteSubFolder(catId, subId) {
+      const main = db.find(c => c.id === catId);
+      if (main) {
+        main.subs = main.subs.filter(s => s.id !== subId);
+        renderApp();
+      }
+    }
+
+    function addService() {
+      const subId = document.getElementById('merchantSubSelect').value;
+      const title = document.getElementById('prodTitle').value.trim();
+      const city = document.getElementById('prodCity').value.trim();
+      const price = document.getElementById('prodPrice').value;
+
+      if (!subId || !title || !price || !city) { alert('يرجى تعبئة جميع الحقول بشكل كامل'); return; }
+
+      db.forEach(cat => {
+        cat.subs.forEach(sub => {
+          if (sub.id === subId) {
+            sub.services.push({
+              id: 's_' + Date.now(),
+              title: title,
+              price: Number(price),
+              city: city,
+              phone: currentUser.phone || '0550000000',
+              merchantPhone: currentUser.phone || '0550000000'
             });
+          }
+        });
+      });
+
+      document.getElementById('prodTitle').value = '';
+      document.getElementById('prodPrice').value = '';
+      document.getElementById('prodCity').value = '';
+      alert('تم نشر الخدمة فوراً بنجاح!');
+      renderApp();
+    }
+
+    function deleteService(catId, subId, srvId) {
+      const main = db.find(c => c.id === catId);
+      if (main) {
+        const sub = main.subs.find(s => s.id === subId);
+        if (sub) {
+          sub.services = sub.services.filter(srv => srv.id !== srvId);
+          renderApp();
         }
+      }
+    }
 
-        /* 🛠️ وظائف الإضافة والحذف الصريحة للمالك والمفوض */
-        function addMainCategory() {
-            const title = document.getElementById('newMainCategoryTitle').value.trim();
-            if(title) {
-                data.push({ title: title, subs: [] });
-                document.getElementById('newMainCategoryTitle').value = '';
-                renderCategories();
-                alert("تم إضافة المجلد الرئيسي بنجاح!");
-            } else { alert("يرجى كتابة اسم المجلد الرئيسي"); }
+    function addSupervisor() {
+      const phone = document.getElementById('supervisorPhone').value.trim();
+      if(phone) {
+        supervisors.push(phone);
+        alert('تم اعتماد رقم المشرف بنجاح: ' + phone);
+        document.getElementById('supervisorPhone').value = '';
+      }
+    }
+
+    // --- Authentication ---
+    function handleLogin(mode) {
+      const phone = document.getElementById('loginPhone').value.trim();
+      const pass = document.getElementById('loginPass').value.trim();
+
+      if (mode === 'phone') {
+        if (pass === '1111') {
+          currentUser = { loggedIn: true, phone: phone || '0500000000', role: 'owner', verified: false };
+          switchRole('owner');
+        } else if (supervisors.includes(phone)) {
+          currentUser = { loggedIn: true, phone: phone, role: 'agent', verified: false };
+          switchRole('agent');
+        } else {
+          currentUser = { loggedIn: true, phone: phone || '0599999999', role: 'merchant', verified: false };
+          switchRole('merchant');
         }
+      } else if (mode === 'nafath') {
+        currentUser = { loggedIn: true, phone: phone || '0588888888', role: 'merchant', verified: true };
+        switchRole('merchant');
+      }
 
-        function deleteMainCategory(catIndex) {
-            if(confirm(`⚠️ هل أنت تأكد من حذف المجلد الرئيسي "${data[catIndex].title}" بكافة أقسامه وخدماته؟`)) {
-                data.splice(catIndex, 1);
-                renderCategories();
-            }
-        }
+      updateUserUI();
+      closeModal('loginModal');
+    }
 
-        function addSubCategory() {
-            const catIndex = document.getElementById('targetMainCategorySelect').value;
-            const subTitle = document.getElementById('newSubCategoryTitle').value.trim();
-            if(subTitle && data[catIndex]) {
-                data[catIndex].subs.push({ name: subTitle, services: [] });
-                document.getElementById('newSubCategoryTitle').value = '';
-                renderCategories();
-                alert("تم إضافة القسم الفرعي بنجاح!");
-            } else { alert("يرجى كتابة اسم القسم الفرعي"); }
-        }
+    function logout() {
+      currentUser = { loggedIn: false, phone: '', role: 'client', verified: false };
+      updateUserUI();
+      switchRole('client');
+    }
 
-        function addSubCategoryByAgent() {
-            const catIndex = document.getElementById('agentMainCategorySelect').value;
-            const subTitle = document.getElementById('agentSubCategoryTitle').value.trim();
-            if(subTitle && data[catIndex]) {
-                data[catIndex].subs.push({ name: subTitle, services: [] });
-                document.getElementById('agentSubCategoryTitle').value = '';
-                renderCategories();
-                alert("تم إضافة القسم الفرعي بنجاح بواسطة المفوض!");
-            } else { alert("يرجى كتابة اسم القسم الفرعي"); }
-        }
+    function updateUserUI() {
+      const statusEl = document.getElementById('userStatus');
+      if (currentUser.loggedIn) {
+        statusEl.innerHTML = `
+          <span>📱 ${currentUser.phone} (${currentUser.role})</span>
+          ${currentUser.verified ? '<span class="badge-verified">✅ موثق نفاذ</span>' : ''}
+          <button class="btn btn-danger btn-sm" onclick="logout()">خروج</button>
+        `;
+      } else {
+        statusEl.innerHTML = `
+          <span>زائر</span>
+          <button class="btn btn-accent btn-sm" onclick="openModal('loginModal')">تسجيل الدخول / نفاذ</button>
+        `;
+      }
+    }
 
-        function deleteSubCategory(catIndex, subIndex) {
-            if(confirm(`⚠️ هل أنت تأكد من حذف هذا القسم الفرعي "${data[catIndex].subs[subIndex].name}"؟`)) {
-                data[catIndex].subs.splice(subIndex, 1);
-                renderCategories();
-            }
-        }
+    // --- Helper Utilities ---
+    function populateDropdowns() {
+      const agentSel = document.getElementById('agentMainSelect');
+      const merchantSel = document.getElementById('merchantSubSelect');
 
-        function deleteService(catIndex, subIndex, serviceIndex) {
-            if(confirm("هل تريد حذف هذه الخدمة؟")) {
-                data[catIndex].subs[subIndex].services.splice(serviceIndex, 1);
-                renderCategories();
-            }
-        }
+      agentSel.innerHTML = '';
+      merchantSel.innerHTML = '';
 
-        function filterServices() { renderCategories(); }
+      db.forEach(cat => {
+        agentSel.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+        cat.subs.forEach(sub => {
+          merchantSel.innerHTML += `<option value="${sub.id}">${cat.name} -> ${sub.name}</option>`;
+        });
+      });
+    }
 
-        function openBookingWithDelivery(type) {
-            document.getElementById('orderType').value = type;
-            openModal('bookingModal');
-        }
+    function renderStats() {
+      document.getElementById('stat-copies').innerText = stats.copies;
+      document.getElementById('stat-deliveries').innerText = stats.deliveries;
+      document.getElementById('stat-bookings').innerText = stats.bookings;
+    }
 
-        function addNewProductByMerchant() {
-            const catIndex = document.getElementById('merchantSubSelect').value;
-            const title = document.getElementById('pTitle').value;
-            const city = document.getElementById('pCity').value || "السعودية";
-            const price = document.getElementById('pPrice').value;
-            const img = document.getElementById('pImg').value || "https://via.placeholder.com/150";
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-            if(title && price && data[catIndex] && data[catIndex].subs.length > 0) {
-                data[catIndex].subs[0].services.push({ title: title, price: Number(price), city: city, rating: 5, img: img });
-                renderCategories();
-                alert("تم إدراج الخدمة بنجاح في المنصة!");
-                document.getElementById('pTitle').value = '';
-                document.getElementById('pPrice').value = '';
-            } else {
-                alert("يرجى تعبئة الحقول والتأكد من وجود قسم فرعي متاح!");
-            }
-        }
-
-        function sendOTP() {
-            const phone = document.getElementById('inputPhone').value.trim();
-            if(!phone) { alert("يرجى إدخال رقم الجوال"); return; }
-            tempPhone = phone;
-            document.getElementById('stepPhone').style.display = 'none';
-            document.getElementById('stepOTP').style.display = 'block';
-        }
-
-        function verifyOTP() {
-            const otp = document.getElementById('inputOTP').value.trim();
-            if(otp === "1234") {
-                closeModal('loginModal');
-                if(systemUsers.owners.includes(tempPhone)) switchView('owner');
-                else if(systemUsers.agents.includes(tempPhone)) switchView('agent');
-                else switchView('merchant');
-            } else {
-                alert("رمز OTP غير صحيح!");
-            }
-        }
-
-        function registerAgent() {
-            const phone = document.getElementById('newAgentPhone').value.trim();
-            if(phone) { systemUsers.agents.push(phone); alert(`تم تسجيل المفوض برقم (${phone})!`); document.getElementById('newAgentPhone').value = ''; }
-        }
-
-        function registerMerchant() {
-            const phone = document.getElementById('newMerchantPhone').value.trim();
-            if(phone) { systemUsers.merchants.push(phone); alert(`تم تسجيل التاجر برقم (${phone})!`); document.getElementById('newMerchantPhone').value = ''; }
-        }
-
-        function logout() { switchView('client'); }
-
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        function copyPhone() {
-            copyCounter++;
-            document.getElementById('copyCounterCount').innerText = copyCounter;
-            alert("تم نسخ الرقم بنجاح!");
-        }
-
-        function submitBooking(e) {
-            e.preventDefault();
-            copyCounter++;
-            document.getElementById('copyCounterCount').innerText = copyCounter;
-            alert("تم إرسال الطلب بنجاح!");
-            closeModal('bookingModal');
-        }
-
-        // تشغيل النمط العادي افتراضياً
-        switchView('client');
-    </script>
+    // Start App
+    init();
+  </script>
 </body>
 </html>
