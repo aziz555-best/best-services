@@ -3,34 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>منصة BEST (أفضل) - مع خريطة GPS تفاعلية</title>
+  <title>منصة BEST - مع فلاتر البحث والروابط الذكية</title>
   
   <meta name="theme-color" content="#2563eb">
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- مكتبة الخرائط Leaflet CSS & JS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <!-- React & Babel -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <style>
-    #map-picker, .listing-map { height: 220px; width: 100%; border-radius: 0.75rem; z-index: 1; }
-  </style>
 </head>
 <body class="bg-gray-100 font-sans">
 
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+    const { useState, useEffect } = React;
 
-    // 1. المناطق والمحافظات
+    // 1. قاعدة بيانات المناطق والمحافظات
     const SAUDI_REGIONS = [
       { id: 'jazan', name: 'منطقة جازان', cities: ['جازان', 'أبو عريش', 'صامطة', 'صبيا', 'بيش', 'أحد المسارحة', 'الدرب'] },
       { id: 'riyadh', name: 'منطقة الرياض', cities: ['الرياض', 'الخرج', 'الدرعية', 'المجمعة'] },
@@ -39,7 +31,7 @@
       { id: 'asir', name: 'منطقة عسير', cities: ['أبها', 'خميس مشيط', 'محايل عسير'] }
     ];
 
-    // 2. إعلانات افتراضية مع إحداثيات واقعية (جازان والرياض)
+    // 2. إعلانات افتراضية مجهزة بالإحداثيات وأرقام التواصل
     const INITIAL_LISTINGS = [
       {
         id: 1,
@@ -47,10 +39,8 @@
         price: 1500,
         region: 'منطقة جازان',
         city: 'أبو عريش',
-        description: 'تركيب وصيانة جميع أنواع التكييف بضمان شامل.',
-        is_featured: true,
-        avg_rating: 4.8,
-        reviews_count: 12,
+        phone: '966500000000',
+        description: 'تركيب وصيانة جميع أنواع التكييف بضمان شامل وصيانة دورية.',
         lat: 16.9691,
         lng: 42.8314
       },
@@ -60,124 +50,190 @@
         price: 450,
         region: 'منطقة الرياض',
         city: 'الرياض',
-        description: 'دينات مجهزة لنقل الأثاث داخل وخارج الرياض.',
-        is_featured: false,
-        avg_rating: 4.5,
-        reviews_count: 8,
+        phone: '966500000001',
+        description: 'دينات مجهزة لنقل الأثاث داخل وخارج الرياض مع الفك والتركيب.',
         lat: 24.7136,
         lng: 46.6753
+      },
+      {
+        id: 3,
+        title: 'صيانة شبكات وتأسيس كهرباء',
+        price: 250,
+        region: 'منطقة جازان',
+        city: 'جازان',
+        phone: '966500000002',
+        description: 'كشف أعطال الكهرباء وتأسيس المنازل بأعلى معايير الأمان.',
+        lat: 16.8892,
+        lng: 42.5511
       }
     ];
 
     function App() {
       const [listings, setListings] = useState(INITIAL_LISTINGS);
-      const [search, setSearch] = useState('');
+      
+      // حالات فلاتر البحث
+      const [searchQuery, setSearchQuery] = useState('');
       const [selectedRegion, setSelectedRegion] = useState('');
       const [selectedCity, setSelectedCity] = useState('');
       const [userCoords, setUserCoords] = useState(null);
-      
+
       const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-      // التقاط موقع المستخدم المباشر بالـ GPS عند فتح الصفحة
+      // التقاط موقع المستخدم عبر GPS عند فتح التطبيق
       useEffect(() => {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             (pos) => setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-            (err) => console.log("لم يتم تحديد الموقع تلقائياً")
+            (err) => console.log('تعذر التحديد التلقائي للموقع')
           );
         }
       }, []);
 
       const activeRegionObj = SAUDI_REGIONS.find((r) => r.name === selectedRegion);
 
+      // منطق الفلترة المزدوجة (البحث بالنص + المنطقة + المحافظة)
       const filteredListings = listings.filter((item) => {
-        const matchesSearch = item.title.includes(search) || item.description.includes(search);
+        const matchesSearch = item.title.includes(searchQuery) || item.description.includes(searchQuery);
         const matchesRegion = selectedRegion ? item.region === selectedRegion : true;
         const matchesCity = selectedCity ? item.city === selectedCity : true;
         return matchesSearch && matchesRegion && matchesCity;
       });
 
       const handleAddListing = (newListing) => {
-        setListings([{ id: Date.now(), ...newListing }, ...listings]);
+        setListings([newListing, ...listings]);
+      };
+
+      const resetFilters = () => {
+        setSearchQuery('');
+        setSelectedRegion('');
+        setSelectedCity('');
       };
 
       return (
         <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-          <header className="max-w-6xl mx-auto bg-white p-4 rounded-xl shadow-sm mb-6 flex justify-between items-center">
+          {/* الهيدر */}
+          <header className="max-w-5xl mx-auto bg-white p-4 rounded-xl shadow-sm mb-6 flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-black text-blue-600">منصة BEST (أفضل)</h1>
-              <p className="text-xs text-gray-500">منصة الخدمات المباشرة مع خرائط الـ GPS</p>
+              <h1 className="text-2xl font-black text-blue-600">منصة BEST</h1>
+              <p className="text-xs text-gray-500">دليل الخدمات والأعمال المباشر</p>
             </div>
             <button
               onClick={() => setIsCreateOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 py-2 rounded-lg transition"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 py-2 rounded-lg transition shadow-sm"
             >
-              + إضافة إعلان بموقع الخريطة
+              + إضافة إعلان
             </button>
           </header>
 
-          <main className="max-w-6xl mx-auto space-y-4">
-            {/* شريط البحث والفلترة */}
-            <div className="bg-white p-4 rounded-xl shadow-sm space-y-3">
-              <div className="flex flex-col md:flex-row gap-3">
+          <main className="max-w-5xl mx-auto space-y-4">
+            
+            {/* 🔍 شريط الفلاتر والبحث المتقدم */}
+            <div className="bg-white p-4 rounded-xl shadow-sm space-y-3 border">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold text-gray-700">🔍 فلاتر البحث والفرز</span>
+                {(searchQuery || selectedRegion || selectedCity) && (
+                  <button 
+                    onClick={resetFilters}
+                    className="text-xs text-red-500 font-bold hover:underline"
+                  >
+                    إعادة ضبط الفلاتر ↺
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {/* البحث بالنص */}
                 <input
-                  type="text" placeholder="ابحث عن خدمة..." value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="border p-2 rounded-lg flex-1 text-sm focus:outline-none"
+                  type="text"
+                  placeholder="ابحث عن خدمة (مثل: تكييف، كهرباء)..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="border p-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
                 />
+
+                {/* فلتر المنطقة */}
                 <select
                   value={selectedRegion}
                   onChange={(e) => { setSelectedRegion(e.target.value); setSelectedCity(''); }}
-                  className="border p-2 rounded-lg text-sm bg-white md:w-48"
+                  className="border p-2.5 rounded-lg text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">جميع المناطق</option>
                   {SAUDI_REGIONS.map((r) => <option key={r.id} value={r.name}>{r.name}</option>)}
                 </select>
+
+                {/* فلتر المحافظة (ديناميكي بناءً على المنطقة) */}
                 <select
-                  value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)}
-                  disabled={!selectedRegion} className="border p-2 rounded-lg text-sm bg-white md:w-48 disabled:bg-gray-100"
+                  value={selectedCity}
+                  onChange={(e) => setSelectedCity(e.target.value)}
+                  disabled={!selectedRegion}
+                  className="border p-2.5 rounded-lg text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200 disabled:cursor-not-allowed"
                 >
                   <option value="">جميع المحافظات</option>
                   {activeRegionObj && activeRegionObj.cities.map((c, i) => <option key={i} value={c}>{c}</option>)}
                 </select>
               </div>
 
-              {/* حالة الـ GPS */}
-              <div className="text-xs text-gray-600 pt-2 border-t flex items-center gap-1">
-                <span>📍 موقعك الحالي عبر الـ GPS: </span>
-                <span className="font-bold text-emerald-600">
-                  {userCoords ? `${userCoords.lat.toFixed(4)}, ${userCoords.lng.toFixed(4)}` : 'جاري التحديد أو لم يتم منح الإذن'}
-                </span>
+              {/* مؤشر موقع العميل الحالي */}
+              <div className="text-xs text-gray-500 pt-2 border-t flex justify-between items-center">
+                <span>النتائج المعروضة: <strong className="text-blue-600">{filteredListings.length}</strong> إعلان</span>
+                {userCoords && (
+                  <span className="text-emerald-600 font-bold">📍 تم تحديد موقعك لخدمتك بالأقرب</span>
+                )}
               </div>
             </div>
 
-            {/* عرض الإعلانات */}
+            {/* 📋 عرض الإعلانات المفلترة */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredListings.map((item) => (
-                <div key={item.id} className="bg-white p-5 rounded-xl shadow-sm border space-y-3">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-bold text-gray-800 text-lg">{item.title}</h3>
-                    <span className="text-green-600 font-bold bg-green-50 px-2 py-1 rounded text-sm">{item.price} ر.س</span>
-                  </div>
-                  <p className="text-gray-600 text-sm">{item.description}</p>
-                  
-                  <div className="text-xs text-gray-500">📍 {item.region} - {item.city}</div>
+              {filteredListings.length > 0 ? (
+                filteredListings.map((item) => (
+                  <div key={item.id} className="bg-white p-5 rounded-xl shadow-sm border hover:shadow-md transition space-y-3">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-bold text-gray-800 text-lg">{item.title}</h3>
+                      <span className="text-green-700 font-black bg-green-50 px-2.5 py-1 rounded text-sm">{item.price} ر.س</span>
+                    </div>
 
-                  {/* رابط اتجاهات خرائط قوقل المباشر */}
-                  <div className="pt-2 border-t flex justify-between items-center">
-                    <button
-                      onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`, '_blank')}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded font-bold flex items-center gap-1"
-                    >
-                      🗺️ فتح التوجيه في Google Maps
-                    </button>
-                    <span className="text-xs text-gray-400">إحداثيات: {item.lat.toFixed(2)}, {item.lng.toFixed(2)}</span>
+                    <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
+                    
+                    <div className="text-xs text-gray-500 font-medium">
+                      📍 {item.region} - {item.city}
+                    </div>
+
+                    {/* Deep Links المباشرة (واتساب + خرائط جوجل) */}
+                    <div className="pt-3 border-t flex gap-2">
+                      {item.lat && item.lng ? (
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs py-2.5 rounded-lg font-bold text-center transition flex items-center justify-center gap-1"
+                        >
+                          📍 موقع الخدمة (Maps)
+                        </a>
+                      ) : (
+                        <span className="flex-1 bg-gray-50 text-gray-400 text-xs py-2.5 rounded-lg text-center">الموقع غير محدد</span>
+                      )}
+
+                      <a
+                        href={`https://wa.me/${item.phone}?text=${encodeURIComponent(`السلام عليكم، أستفسر عن إعلان: ${item.title}`)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2.5 rounded-lg font-bold text-center transition flex items-center justify-center gap-1"
+                      >
+                        📲 تواصل عبر الواتساب
+                      </a>
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="col-span-full bg-white p-8 rounded-xl text-center text-gray-500 space-y-2 border">
+                  <p className="font-bold text-base">لا توجد نتائج تطابق فلاتر البحث الحالية.</p>
+                  <button onClick={resetFilters} className="text-xs text-blue-600 font-bold hover:underline">إلغاء الفلاتر واستعراض الكل</button>
                 </div>
-              ))}
+              )}
             </div>
           </main>
 
+          {/* نافذة إضافة إعلان */}
           {isCreateOpen && (
             <CreateListingModal
               onClose={() => setIsCreateOpen(false)}
@@ -189,140 +245,140 @@
       );
     }
 
-    // 3. نافذة إدراج الإعلان المجهزة بخريطة GPS تفاعلية
+    // 3. نافذة إضافة الإعلان مع التقاط الموقع المباشر (Deep Linking GPS)
     function CreateListingModal({ onClose, onSubmit, userCoords }) {
       const [title, setTitle] = useState('');
       const [price, setPrice] = useState('');
+      const [phone, setPhone] = useState('966');
       const [selectedRegion, setSelectedRegion] = useState('');
       const [selectedCity, setSelectedCity] = useState('');
       const [description, setDescription] = useState('');
-      
-      // الإحداثيات الافتراضية (مركز السعودية أو موقع العميل)
-      const [coords, setCoords] = useState(userCoords || { lat: 24.7136, lng: 46.6753 });
-      
-      const mapRef = useRef(null);
-      const markerRef = useRef(null);
-
-      // تهيئة الخريطة التفاعلية عند فتح النافذة
-      useEffect(() => {
-        if (!mapRef.current) {
-          const map = L.map('map-picker').setView([coords.lat, coords.lng], 12);
-          
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-          }).addTo(map);
-
-          const marker = L.marker([coords.lat, coords.lng], { draggable: true }).addTo(map);
-
-          // تحديث الإحداثيات عند سحب الدبوس
-          marker.on('dragend', () => {
-            const position = marker.getLatLng();
-            setCoords({ lat: position.lat, lng: position.lng });
-          });
-
-          // تحديث الإحداثيات عند النقر على الخريطة
-          map.on('click', (e) => {
-            marker.setLatLng(e.latlng);
-            setCoords({ lat: e.latlng.lat, lng: e.latlng.lng });
-          });
-
-          mapRef.current = map;
-          markerRef.current = marker;
-        }
-      }, []);
-
-      // زر التقاط الـ GPS الحقيقي للجوال
-      const handleGetGPS = () => {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition((pos) => {
-            const newCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            setCoords(newCoords);
-            if (mapRef.current && markerRef.current) {
-              mapRef.current.setView([newCoords.lat, newCoords.lng], 15);
-              markerRef.current.setLatLng([newCoords.lat, newCoords.lng]);
-            }
-          });
-        }
-      };
+      const [coords, setCoords] = useState(userCoords || null);
+      const [isCapturing, setIsCapturing] = useState(false);
 
       const activeRegionObj = SAUDI_REGIONS.find((r) => r.name === selectedRegion);
+
+      // التقاط إحداثيات الـ GPS المباشرة بدون الحاجة لتضمين خريطة ثقيلة
+      const handleGetGPS = () => {
+        if (navigator.geolocation) {
+          setIsCapturing(true);
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+              setIsCapturing(false);
+              alert('تم التقاط إحداثيات موقعك بنجاح ✅');
+            },
+            (err) => {
+              setIsCapturing(false);
+              alert('تعذر جلب الموقع. يرجى التأكد من تفعيل الـ GPS في الجوال.');
+            }
+          );
+        }
+      };
 
       const handleSubmit = (e) => {
         e.preventDefault();
         onSubmit({
+          id: Date.now(),
           title,
           price: parseFloat(price),
+          phone,
           region: selectedRegion,
           city: selectedCity,
           description,
-          lat: coords.lat,
-          lng: coords.lng
+          lat: coords?.lat || null,
+          lng: coords?.lng || null
         });
         onClose();
       };
 
       return (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-xl p-6 max-w-lg w-full shadow-2xl space-y-4 my-8">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl space-y-4 my-8">
             <div className="flex justify-between items-center border-b pb-2">
-              <h3 className="font-bold text-gray-800">إضافة إعلان مع تحديد موقع الـ GPS</h3>
-              <button onClick={onClose} className="text-gray-400 font-bold">✕</button>
+              <h3 className="font-bold text-gray-800">إضافة إعلان جديد</h3>
+              <button onClick={onClose} className="text-gray-400 font-bold hover:text-gray-600">✕</button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-3">
-              <input
-                type="text" placeholder="عنوان الخدمة" value={title}
-                onChange={(e) => setTitle(e.target.value)} required
-                className="w-full border p-2 rounded text-sm focus:outline-none"
-              />
-              <input
-                type="number" placeholder="السعر (ريال)" value={price}
-                onChange={(e) => setPrice(e.target.value)} required
-                className="w-full border p-2 rounded text-sm focus:outline-none"
-              />
-              
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">عنوان الخدمة</label>
+                <input
+                  type="text" placeholder="مثال: تركيب مكيفات سبليت" value={title}
+                  onChange={(e) => setTitle(e.target.value)} required
+                  className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-2">
-                <select
-                  value={selectedRegion} onChange={(e) => { setSelectedRegion(e.target.value); setSelectedCity(''); }}
-                  required className="border p-2 rounded text-sm bg-white"
-                >
-                  <option value="">اختر المنطقة...</option>
-                  {SAUDI_REGIONS.map((r) => <option key={r.id} value={r.name}>{r.name}</option>)}
-                </select>
-                <select
-                  value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)}
-                  disabled={!selectedRegion} required className="border p-2 rounded text-sm bg-white"
-                >
-                  <option value="">اختر المحافظة...</option>
-                  {activeRegionObj && activeRegionObj.cities.map((c, i) => <option key={i} value={c}>{c}</option>)}
-                </select>
+                <div>
+                  <label className="text-xs font-bold text-gray-600 block mb-1">السعر (ريال)</label>
+                  <input
+                    type="number" placeholder="150" value={price}
+                    onChange={(e) => setPrice(e.target.value)} required
+                    className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-600 block mb-1">رقم الواتساب</label>
+                  <input
+                    type="text" placeholder="9665xxxxxxxx" value={phone}
+                    onChange={(e) => setPhone(e.target.value)} required
+                    className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 dir-ltr text-right"
+                  />
+                </div>
               </div>
 
-              {/* الخريطة التفاعلية والـ GPS */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold text-gray-700">حدد الموقع على الخريطة (حرك الدبوس):</label>
-                  <button
-                    type="button" onClick={handleGetGPS}
-                    className="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded font-bold hover:bg-emerald-200"
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-xs font-bold text-gray-600 block mb-1">المنطقة</label>
+                  <select
+                    value={selectedRegion} onChange={(e) => { setSelectedRegion(e.target.value); setSelectedCity(''); }}
+                    required className="w-full border p-2 rounded text-sm bg-white"
                   >
-                    🎯 التقاط موقعي الحالي (GPS)
-                  </button>
+                    <option value="">اختر...</option>
+                    {SAUDI_REGIONS.map((r) => <option key={r.id} value={r.name}>{r.name}</option>)}
+                  </select>
                 </div>
-                <div id="map-picker"></div>
-                <div className="text-[10px] text-gray-400 text-left" dir="ltr">
-                  Selected Coords: {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
+
+                <div>
+                  <label className="text-xs font-bold text-gray-600 block mb-1">المحافظة</label>
+                  <select
+                    value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)}
+                    disabled={!selectedRegion} required className="w-full border p-2 rounded text-sm bg-white disabled:bg-gray-100"
+                  >
+                    <option value="">اختر...</option>
+                    {activeRegionObj && activeRegionObj.cities.map((c, i) => <option key={i} value={c}>{c}</option>)}
+                  </select>
                 </div>
               </div>
 
-              <textarea
-                placeholder="التفاصيل..." value={description}
-                onChange={(e) => setDescription(e.target.value)} required
-                className="w-full border p-2 rounded text-sm focus:outline-none" rows="2"
-              ></textarea>
+              {/* التقاط الـ GPS بضغطة زر */}
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={handleGetGPS}
+                  className={`w-full py-2 px-3 rounded text-xs font-bold flex items-center justify-center gap-1 border transition ${
+                    coords 
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-300' 
+                      : 'bg-gray-50 text-gray-700 border-gray-300 hover:bg-gray-100'
+                  }`}
+                >
+                  {isCapturing ? 'جاري التقاط الموقع...' : coords ? '✅ تم التقاط موقع الإعلان بالـ GPS' : '🎯 الضغط هنا لالتقاط موقع الإعلان الحالي (GPS)'}
+                </button>
+              </div>
 
-              <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded text-sm font-bold hover:bg-blue-700 transition">
-                نشر الإعلان بالموقع المحدد
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">تفاصيل الخدمة</label>
+                <textarea
+                  placeholder="اكتب تفاصيل الخدمة وشروطها..." value={description}
+                  onChange={(e) => setDescription(e.target.value)} required
+                  className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" rows="3"
+                ></textarea>
+              </div>
+
+              <button type="submit" className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition shadow-sm">
+                نشر الإعلان
               </button>
             </form>
           </div>
