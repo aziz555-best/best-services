@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>منصة BEST - مع فلاتر البحث والروابط الذكية</title>
+  <title>منصة BEST - النسخة المكتملة الشاملة</title>
   
   <meta name="theme-color" content="#2563eb">
   
@@ -22,7 +22,7 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // 1. قاعدة بيانات المناطق والمحافظات
+    // 1. قاعدة بيانات المناطق والمحافظات الشاملة
     const SAUDI_REGIONS = [
       { id: 'jazan', name: 'منطقة جازان', cities: ['جازان', 'أبو عريش', 'صامطة', 'صبيا', 'بيش', 'أحد المسارحة', 'الدرب'] },
       { id: 'riyadh', name: 'منطقة الرياض', cities: ['الرياض', 'الخرج', 'الدرعية', 'المجمعة'] },
@@ -31,7 +31,7 @@
       { id: 'asir', name: 'منطقة عسير', cities: ['أبها', 'خميس مشيط', 'محايل عسير'] }
     ];
 
-    // 2. إعلانات افتراضية مجهزة بالإحداثيات وأرقام التواصل
+    // 2. إعلانات افتراضية مجهزة بكافة البيانات والتقييمات
     const INITIAL_LISTINGS = [
       {
         id: 1,
@@ -40,9 +40,15 @@
         region: 'منطقة جازان',
         city: 'أبو عريش',
         phone: '966500000000',
-        description: 'تركيب وصيانة جميع أنواع التكييف بضمان شامل وصيانة دورية.',
+        description: 'تركيب وصيانة جميع أنواع التكييف بضمان شامل وصيانة دورية مع فريق متخصص.',
         lat: 16.9691,
-        lng: 42.8314
+        lng: 42.8314,
+        avg_rating: 4.8,
+        reviews_count: 2,
+        reviews: [
+          { id: 101, user: 'أحمد السعيد', rating: 5, comment: 'خدمة ممتازة وسريعة في المواعيد.' },
+          { id: 102, user: 'محمد علي', rating: 4.5, comment: 'شغل نظيف وأسعار مناسبة.' }
+        ]
       },
       {
         id: 2,
@@ -51,47 +57,43 @@
         region: 'منطقة الرياض',
         city: 'الرياض',
         phone: '966500000001',
-        description: 'دينات مجهزة لنقل الأثاث داخل وخارج الرياض مع الفك والتركيب.',
+        description: 'دينات مجهزة لنقل الأثاث داخل وخارج الرياض مع الفك والتركيب والتغليف.',
         lat: 24.7136,
-        lng: 46.6753
-      },
-      {
-        id: 3,
-        title: 'صيانة شبكات وتأسيس كهرباء',
-        price: 250,
-        region: 'منطقة جازان',
-        city: 'جازان',
-        phone: '966500000002',
-        description: 'كشف أعطال الكهرباء وتأسيس المنازل بأعلى معايير الأمان.',
-        lat: 16.8892,
-        lng: 42.5511
+        lng: 46.6753,
+        avg_rating: 4.0,
+        reviews_count: 1,
+        reviews: [
+          { id: 103, user: 'سعود عبدالله', rating: 4, comment: 'تعامل طيب والتزام بالوقت.' }
+        ]
       }
     ];
 
     function App() {
       const [listings, setListings] = useState(INITIAL_LISTINGS);
       
-      // حالات فلاتر البحث
+      // حالات الفلاتر والبحث
       const [searchQuery, setSearchQuery] = useState('');
       const [selectedRegion, setSelectedRegion] = useState('');
       const [selectedCity, setSelectedCity] = useState('');
       const [userCoords, setUserCoords] = useState(null);
 
+      // النوافذ المنبثقة (Modals)
       const [isCreateOpen, setIsCreateOpen] = useState(false);
+      const [selectedListing, setSelectedListing] = useState(null);
+      const [reportingListing, setReportingListing] = useState(null);
 
-      // التقاط موقع المستخدم عبر GPS عند فتح التطبيق
       useEffect(() => {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             (pos) => setUserCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-            (err) => console.log('تعذر التحديد التلقائي للموقع')
+            (err) => console.log('تعذر تحديد الموقع تلقائياً')
           );
         }
       }, []);
 
       const activeRegionObj = SAUDI_REGIONS.find((r) => r.name === selectedRegion);
 
-      // منطق الفلترة المزدوجة (البحث بالنص + المنطقة + المحافظة)
+      // منطق الفلترة الثلاثية (نص + منطقة + مدينة)
       const filteredListings = listings.filter((item) => {
         const matchesSearch = item.title.includes(searchQuery) || item.description.includes(searchQuery);
         const matchesRegion = selectedRegion ? item.region === selectedRegion : true;
@@ -99,8 +101,40 @@
         return matchesSearch && matchesRegion && matchesCity;
       });
 
+      // ➕ إضافة إعلان جديد
       const handleAddListing = (newListing) => {
         setListings([newListing, ...listings]);
+      };
+
+      // 🗑️ حذف إعلان
+      const handleDeleteListing = (id) => {
+        if (confirm('هل أنت تأكد من رغبتك في حذف هذا الإعلان؟')) {
+          setListings(listings.filter(item => item.id !== id));
+          if (selectedListing && selectedListing.id === id) {
+            setSelectedListing(null);
+          }
+        }
+      };
+
+      // ⭐ إضافة تقييم جديد
+      const handleAddReview = (listingId, newReview) => {
+        setListings(listings.map(item => {
+          if (item.id === listingId) {
+            const updatedReviews = [newReview, ...item.reviews];
+            const newAvg = (updatedReviews.reduce((acc, r) => acc + r.rating, 0) / updatedReviews.length).toFixed(1);
+            const updatedItem = {
+              ...item,
+              reviews: updatedReviews,
+              reviews_count: updatedReviews.length,
+              avg_rating: parseFloat(newAvg)
+            };
+            if (selectedListing && selectedListing.id === listingId) {
+              setSelectedListing(updatedItem);
+            }
+            return updatedItem;
+          }
+          return item;
+        }));
       };
 
       const resetFilters = () => {
@@ -111,11 +145,11 @@
 
       return (
         <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-          {/* الهيدر */}
+          {/* الهيدر الرئيسي */}
           <header className="max-w-5xl mx-auto bg-white p-4 rounded-xl shadow-sm mb-6 flex justify-between items-center">
             <div>
               <h1 className="text-2xl font-black text-blue-600">منصة BEST</h1>
-              <p className="text-xs text-gray-500">دليل الخدمات والأعمال المباشر</p>
+              <p className="text-xs text-gray-500">منصة الخدمات الشاملة مع خرائط وتقييمات مباشرة</p>
             </div>
             <button
               onClick={() => setIsCreateOpen(true)}
@@ -132,26 +166,21 @@
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-gray-700">🔍 فلاتر البحث والفرز</span>
                 {(searchQuery || selectedRegion || selectedCity) && (
-                  <button 
-                    onClick={resetFilters}
-                    className="text-xs text-red-500 font-bold hover:underline"
-                  >
+                  <button onClick={resetFilters} className="text-xs text-red-500 font-bold hover:underline">
                     إعادة ضبط الفلاتر ↺
                   </button>
                 )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {/* البحث بالنص */}
                 <input
                   type="text"
-                  placeholder="ابحث عن خدمة (مثل: تكييف، كهرباء)..."
+                  placeholder="ابحث عن خدمة (مثل: تكييف، نقل)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border p-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
+                  className="border p-2.5 rounded-lg text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
 
-                {/* فلتر المنطقة */}
                 <select
                   value={selectedRegion}
                   onChange={(e) => { setSelectedRegion(e.target.value); setSelectedCity(''); }}
@@ -161,79 +190,106 @@
                   {SAUDI_REGIONS.map((r) => <option key={r.id} value={r.name}>{r.name}</option>)}
                 </select>
 
-                {/* فلتر المحافظة (ديناميكي بناءً على المنطقة) */}
                 <select
                   value={selectedCity}
                   onChange={(e) => setSelectedCity(e.target.value)}
                   disabled={!selectedRegion}
-                  className="border p-2.5 rounded-lg text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200 disabled:cursor-not-allowed"
+                  className="border p-2.5 rounded-lg text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200"
                 >
                   <option value="">جميع المحافظات</option>
                   {activeRegionObj && activeRegionObj.cities.map((c, i) => <option key={i} value={c}>{c}</option>)}
                 </select>
               </div>
-
-              {/* مؤشر موقع العميل الحالي */}
-              <div className="text-xs text-gray-500 pt-2 border-t flex justify-between items-center">
-                <span>النتائج المعروضة: <strong className="text-blue-600">{filteredListings.length}</strong> إعلان</span>
-                {userCoords && (
-                  <span className="text-emerald-600 font-bold">📍 تم تحديد موقعك لخدمتك بالأقرب</span>
-                )}
-              </div>
             </div>
 
-            {/* 📋 عرض الإعلانات المفلترة */}
+            {/* 📋 عرض الإعلانات */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredListings.length > 0 ? (
                 filteredListings.map((item) => (
-                  <div key={item.id} className="bg-white p-5 rounded-xl shadow-sm border hover:shadow-md transition space-y-3">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-bold text-gray-800 text-lg">{item.title}</h3>
-                      <span className="text-green-700 font-black bg-green-50 px-2.5 py-1 rounded text-sm">{item.price} ر.س</span>
-                    </div>
-
-                    <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
-                    
-                    <div className="text-xs text-gray-500 font-medium">
-                      📍 {item.region} - {item.city}
-                    </div>
-
-                    {/* Deep Links المباشرة (واتساب + خرائط جوجل) */}
-                    <div className="pt-3 border-t flex gap-2">
-                      {item.lat && item.lng ? (
-                        <a
-                          href={`https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs py-2.5 rounded-lg font-bold text-center transition flex items-center justify-center gap-1"
+                  <div key={item.id} className="bg-white p-5 rounded-xl shadow-sm border space-y-3 flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-start gap-2">
+                        <h3 
+                          onClick={() => setSelectedListing(item)}
+                          className="font-bold text-gray-800 text-lg hover:text-blue-600 cursor-pointer"
                         >
-                          📍 موقع الخدمة (Maps)
-                        </a>
-                      ) : (
-                        <span className="flex-1 bg-gray-50 text-gray-400 text-xs py-2.5 rounded-lg text-center">الموقع غير محدد</span>
-                      )}
+                          {item.title}
+                        </h3>
+                        <div className="flex items-center gap-1">
+                          <span className="text-green-700 font-black bg-green-50 px-2.5 py-1 rounded text-sm whitespace-nowrap">{item.price} ر.س</span>
+                          {/* 🗑️ زر الحذف */}
+                          <button
+                            onClick={() => handleDeleteListing(item.id)}
+                            title="حذف الإعلان"
+                            className="bg-gray-100 hover:bg-red-50 text-gray-400 hover:text-red-600 p-1.5 rounded-lg transition text-xs"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
 
-                      <a
-                        href={`https://wa.me/${item.phone}?text=${encodeURIComponent(`السلام عليكم، أستفسر عن إعلان: ${item.title}`)}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2.5 rounded-lg font-bold text-center transition flex items-center justify-center gap-1"
-                      >
-                        📲 تواصل عبر الواتساب
-                      </a>
+                      {/* التقييم بالنجوم */}
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className="text-amber-500 font-bold">⭐ {item.avg_rating || 'جديد'}</span>
+                        <span className="text-gray-400">({item.reviews_count} تقييم)</span>
+                      </div>
+
+                      <p className="text-gray-600 text-sm line-clamp-2">{item.description}</p>
+                      
+                      <div className="text-xs text-gray-500 font-medium">📍 {item.region} - {item.city}</div>
+                    </div>
+
+                    <div className="space-y-2 pt-2 border-t">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setSelectedListing(item)}
+                          className="flex-1 bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs py-2 rounded-lg font-bold transition"
+                        >
+                          🔍 التفاصيل والتقييمات
+                        </button>
+                        
+                        <button
+                          onClick={() => setReportingListing(item)}
+                          className="bg-red-50 text-red-500 hover:bg-red-100 text-xs px-3 py-2 rounded-lg font-bold transition"
+                        >
+                          🚩 إبلاغ
+                        </button>
+                      </div>
+
+                      {/* الروابط الذكية (Google Maps & Whatsapp) */}
+                      <div className="flex gap-2">
+                        {item.lat && item.lng ? (
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`}
+                            target="_blank" rel="noreferrer"
+                            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs py-2 rounded-lg font-bold text-center transition"
+                          >
+                            📍 الخريطة
+                          </a>
+                        ) : (
+                          <span className="flex-1 bg-gray-50 text-gray-400 text-xs py-2 rounded-lg text-center">لا توجد إحداثيات</span>
+                        )}
+                        <a
+                          href={`https://wa.me/${item.phone}?text=${encodeURIComponent(`السلام عليكم، أستفسر عن إعلان: ${item.title}`)}`}
+                          target="_blank" rel="noreferrer"
+                          className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs py-2 rounded-lg font-bold text-center transition"
+                        >
+                          📲 واتساب
+                        </a>
+                      </div>
                     </div>
                   </div>
                 ))
               ) : (
                 <div className="col-span-full bg-white p-8 rounded-xl text-center text-gray-500 space-y-2 border">
-                  <p className="font-bold text-base">لا توجد نتائج تطابق فلاتر البحث الحالية.</p>
+                  <p className="font-bold text-base">لا توجد إعلانات مطابقة لخيارات البحث الحالية.</p>
                   <button onClick={resetFilters} className="text-xs text-blue-600 font-bold hover:underline">إلغاء الفلاتر واستعراض الكل</button>
                 </div>
               )}
             </div>
           </main>
 
-          {/* نافذة إضافة إعلان */}
+          {/* 1. نافذة إضافة إعلان مع التقاط الـ GPS */}
           {isCreateOpen && (
             <CreateListingModal
               onClose={() => setIsCreateOpen(false)}
@@ -241,11 +297,29 @@
               userCoords={userCoords}
             />
           )}
+
+          {/* 2. صفحة التفاصيل والتقييمات المنفصلة */}
+          {selectedListing && (
+            <ListingDetailsModal
+              listing={selectedListing}
+              onClose={() => setSelectedListing(null)}
+              onAddReview={handleAddReview}
+              onDelete={handleDeleteListing}
+            />
+          )}
+
+          {/* 3. نافذة البلاغات */}
+          {reportingListing && (
+            <ReportModal
+              listing={reportingListing}
+              onClose={() => setReportingListing(null)}
+            />
+          )}
         </div>
       );
     }
 
-    // 3. نافذة إضافة الإعلان مع التقاط الموقع المباشر (Deep Linking GPS)
+    // --- نافذة إضافة إعلان ---
     function CreateListingModal({ onClose, onSubmit, userCoords }) {
       const [title, setTitle] = useState('');
       const [price, setPrice] = useState('');
@@ -254,25 +328,16 @@
       const [selectedCity, setSelectedCity] = useState('');
       const [description, setDescription] = useState('');
       const [coords, setCoords] = useState(userCoords || null);
-      const [isCapturing, setIsCapturing] = useState(false);
 
       const activeRegionObj = SAUDI_REGIONS.find((r) => r.name === selectedRegion);
 
-      // التقاط إحداثيات الـ GPS المباشرة بدون الحاجة لتضمين خريطة ثقيلة
+      // التقاط إحداثيات الجوال المباشرة
       const handleGetGPS = () => {
         if (navigator.geolocation) {
-          setIsCapturing(true);
-          navigator.geolocation.getCurrentPosition(
-            (pos) => {
-              setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-              setIsCapturing(false);
-              alert('تم التقاط إحداثيات موقعك بنجاح ✅');
-            },
-            (err) => {
-              setIsCapturing(false);
-              alert('تعذر جلب الموقع. يرجى التأكد من تفعيل الـ GPS في الجوال.');
-            }
-          );
+          navigator.geolocation.getCurrentPosition((pos) => {
+            setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+            alert('تم التقاط موقعك الحالي بنجاح ✅');
+          });
         }
       };
 
@@ -287,7 +352,10 @@
           city: selectedCity,
           description,
           lat: coords?.lat || null,
-          lng: coords?.lng || null
+          lng: coords?.lng || null,
+          avg_rating: 0,
+          reviews_count: 0,
+          reviews: []
         });
         onClose();
       };
@@ -297,88 +365,182 @@
           <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl space-y-4 my-8">
             <div className="flex justify-between items-center border-b pb-2">
               <h3 className="font-bold text-gray-800">إضافة إعلان جديد</h3>
-              <button onClick={onClose} className="text-gray-400 font-bold hover:text-gray-600">✕</button>
+              <button onClick={onClose} className="text-gray-400 font-bold">✕</button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-3">
-              <div>
-                <label className="text-xs font-bold text-gray-600 block mb-1">عنوان الخدمة</label>
+              <input
+                type="text" placeholder="عنوان الخدمة" value={title}
+                onChange={(e) => setTitle(e.target.value)} required
+                className="w-full border p-2 rounded text-sm"
+              />
+              <div className="grid grid-cols-2 gap-2">
                 <input
-                  type="text" placeholder="مثال: تركيب مكيفات سبليت" value={title}
-                  onChange={(e) => setTitle(e.target.value)} required
-                  className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  type="number" placeholder="السعر (ريال)" value={price}
+                  onChange={(e) => setPrice(e.target.value)} required
+                  className="w-full border p-2 rounded text-sm"
+                />
+                <input
+                  type="text" placeholder="رقم الواتساب (966...)" value={phone}
+                  onChange={(e) => setPhone(e.target.value)} required
+                  className="w-full border p-2 rounded text-sm dir-ltr text-right"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">السعر (ريال)</label>
-                  <input
-                    type="number" placeholder="150" value={price}
-                    onChange={(e) => setPrice(e.target.value)} required
-                    className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">رقم الواتساب</label>
-                  <input
-                    type="text" placeholder="9665xxxxxxxx" value={phone}
-                    onChange={(e) => setPhone(e.target.value)} required
-                    className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 dir-ltr text-right"
-                  />
-                </div>
+                <select value={selectedRegion} onChange={(e) => { setSelectedRegion(e.target.value); setSelectedCity(''); }} required className="border p-2 rounded text-sm">
+                  <option value="">اختر المنطقة...</option>
+                  {SAUDI_REGIONS.map((r) => <option key={r.id} value={r.name}>{r.name}</option>)}
+                </select>
+                <select value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} disabled={!selectedRegion} required className="border p-2 rounded text-sm">
+                  <option value="">اختر المحافظة...</option>
+                  {activeRegionObj && activeRegionObj.cities.map((c, i) => <option key={i} value={c}>{c}</option>)}
+                </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">المنطقة</label>
-                  <select
-                    value={selectedRegion} onChange={(e) => { setSelectedRegion(e.target.value); setSelectedCity(''); }}
-                    required className="w-full border p-2 rounded text-sm bg-white"
-                  >
-                    <option value="">اختر...</option>
-                    {SAUDI_REGIONS.map((r) => <option key={r.id} value={r.name}>{r.name}</option>)}
-                  </select>
-                </div>
+              <button type="button" onClick={handleGetGPS} className="w-full bg-emerald-50 text-emerald-700 py-2 rounded text-xs font-bold border border-emerald-300">
+                {coords ? '✅ تم التقاط موقع الـ GPS' : '🎯 التقاط موقع الإعلان الحالي (GPS)'}
+              </button>
 
-                <div>
-                  <label className="text-xs font-bold text-gray-600 block mb-1">المحافظة</label>
-                  <select
-                    value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)}
-                    disabled={!selectedRegion} required className="w-full border p-2 rounded text-sm bg-white disabled:bg-gray-100"
-                  >
-                    <option value="">اختر...</option>
-                    {activeRegionObj && activeRegionObj.cities.map((c, i) => <option key={i} value={c}>{c}</option>)}
-                  </select>
-                </div>
-              </div>
+              <textarea placeholder="التفاصيل..." value={description} onChange={(e) => setDescription(e.target.value)} required className="w-full border p-2 rounded text-sm" rows="3"></textarea>
 
-              {/* التقاط الـ GPS بضغطة زر */}
-              <div className="pt-1">
-                <button
-                  type="button"
-                  onClick={handleGetGPS}
-                  className={`w-full py-2 px-3 rounded text-xs font-bold flex items-center justify-center gap-1 border transition ${
-                    coords 
-                      ? 'bg-emerald-50 text-emerald-700 border-emerald-300' 
-                      : 'bg-gray-50 text-gray-700 border-gray-300 hover:bg-gray-100'
-                  }`}
+              <button type="submit" className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-bold">نشر الإعلان</button>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    // --- صفحة تفاصيل الإعلان والتقييمات ---
+    function ListingDetailsModal({ listing, onClose, onAddReview, onDelete }) {
+      const [userName, setUserName] = useState('');
+      const [rating, setRating] = useState(5);
+      const [comment, setComment] = useState('');
+
+      const handleReviewSubmit = (e) => {
+        e.preventDefault();
+        onAddReview(listing.id, {
+          id: Date.now(),
+          user: userName,
+          rating: Number(rating),
+          comment
+        });
+        setUserName('');
+        setComment('');
+        alert('تمت إضافة تقييمك بنجاح ⭐');
+      };
+
+      return (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center p-4 z-50 overflow-y-auto">
+          <div className="bg-white rounded-xl p-6 max-w-xl w-full shadow-2xl space-y-4 my-8 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b pb-2">
+              <h2 className="font-bold text-xl text-gray-800">{listing.title}</h2>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => onDelete(listing.id)}
+                  className="bg-red-50 text-red-600 text-xs px-2 py-1 rounded font-bold hover:bg-red-100"
                 >
-                  {isCapturing ? 'جاري التقاط الموقع...' : coords ? '✅ تم التقاط موقع الإعلان بالـ GPS' : '🎯 الضغط هنا لالتقاط موقع الإعلان الحالي (GPS)'}
+                  🗑️ حذف الإعلان
                 </button>
+                <button onClick={onClose} className="text-gray-400 font-bold text-lg">✕</button>
               </div>
+            </div>
 
-              <div>
-                <label className="text-xs font-bold text-gray-600 block mb-1">تفاصيل الخدمة</label>
-                <textarea
-                  placeholder="اكتب تفاصيل الخدمة وشروطها..." value={description}
-                  onChange={(e) => setDescription(e.target.value)} required
-                  className="w-full border p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" rows="3"
-                ></textarea>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-green-700 font-bold text-lg">{listing.price} ريال</span>
+                <span className="text-xs bg-gray-100 px-2 py-1 rounded">📍 {listing.region} - {listing.city}</span>
               </div>
+              <p className="text-gray-700 text-sm leading-relaxed border-b pb-3">{listing.description}</p>
+            </div>
 
-              <button type="submit" className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-bold hover:bg-blue-700 transition shadow-sm">
-                نشر الإعلان
+            {/* عرض التقييمات */}
+            <div className="space-y-3">
+              <h3 className="font-bold text-gray-800 text-sm">⭐ آراء وتقييمات العملاء ({listing.reviews_count})</h3>
+              <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+                {listing.reviews && listing.reviews.length > 0 ? (
+                  listing.reviews.map((rev) => (
+                    <div key={rev.id} className="bg-gray-50 p-3 rounded-lg border text-xs space-y-1">
+                      <div className="flex justify-between">
+                        <span className="font-bold text-gray-700">{rev.user}</span>
+                        <span className="text-amber-500">{"★".repeat(Math.floor(rev.rating))}</span>
+                      </div>
+                      <p className="text-gray-600">{rev.comment}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-xs text-gray-400">لا توجد تقييمات حتى الآن. كن أول من يقيّم!</p>
+                )}
+              </div>
+            </div>
+
+            {/* إضافة تقييم جديد */}
+            <form onSubmit={handleReviewSubmit} className="border-t pt-3 space-y-2">
+              <h4 className="font-bold text-xs text-gray-700">أضف تقييمك للخدمة:</h4>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="text" placeholder="اسمك" value={userName}
+                  onChange={(e) => setUserName(e.target.value)} required
+                  className="border p-2 rounded text-xs"
+                />
+                <select value={rating} onChange={(e) => setRating(e.target.value)} className="border p-2 rounded text-xs bg-white">
+                  <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                  <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                  <option value="3">⭐⭐⭐ (3/5)</option>
+                  <option value="2">⭐⭐ (2/5)</option>
+                  <option value="1">⭐ (1/5)</option>
+                </select>
+              </div>
+              <textarea
+                placeholder="اكتب تعليقك وتجربتك مع الخدمة..." value={comment}
+                onChange={(e) => setComment(e.target.value)} required
+                className="w-full border p-2 rounded text-xs" rows="2"
+              ></textarea>
+              <button type="submit" className="w-full bg-amber-500 text-white py-2 rounded text-xs font-bold hover:bg-amber-600">
+                إرسال التقييم
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    // --- نافذة البلاغات ---
+    function ReportModal({ listing, onClose }) {
+      const [reason, setReason] = useState('محتوى غير لائق');
+      const [details, setDetails] = useState('');
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        alert('تم إرسال بلاغك للإدارة بنجاح. سنراجع الإعلان فوراً.');
+        onClose();
+      };
+
+      return (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center p-4 z-50">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl space-y-3">
+            <div className="flex justify-between items-center border-b pb-2">
+              <h3 className="font-bold text-red-600 text-sm">🚩 إبلاغ عن إعلان مخالف</h3>
+              <button onClick={onClose} className="text-gray-400 font-bold">✕</button>
+            </div>
+            <p className="text-xs text-gray-500">الإعلان: <strong className="text-gray-800">{listing.title}</strong></p>
+
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <select value={reason} onChange={(e) => setReason(e.target.value)} className="w-full border p-2 rounded text-xs bg-white">
+                <option value="محتوى غير لائق">محتوى غير لائق</option>
+                <option value="معلومات خادعة أو رقم خاطئ">معلومات خادعة أو رقم خاطئ</option>
+                <option value="خدمة محظورة">خدمة محظورة</option>
+                <option value="سبب آخر">سبب آخر</option>
+              </select>
+
+              <textarea
+                placeholder="توضيح إضافي للإدارة..." value={details}
+                onChange={(e) => setDetails(e.target.value)} required
+                className="w-full border p-2 rounded text-xs" rows="3"
+              ></textarea>
+
+              <button type="submit" className="w-full bg-red-600 text-white py-2 rounded text-xs font-bold hover:bg-red-700">
+                إرسال البلاغ
               </button>
             </form>
           </div>
